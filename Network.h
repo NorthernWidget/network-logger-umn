@@ -37,9 +37,23 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+#include <Logger.h>
 #ifndef Network_h
 #define Network_h
+//RetVal
+#define retVal uint8_t
+//Opcodes
+#define DTRANSMISSION 0x01
+#define DROPPEDCOORD 0x02
+#define ASKFORCOORD 0x03
+#define IHAVECOORD 0x04
+#define IAMCOORD 0x05
+#define UAREPATH 0x06
+#define ACK 0x07
+
+//Function to make an opcode a broadcast Opcode
+#define BroadCast(x) 0x80 | (x)
+
 
 /*Defining the packet*/
 #define MAXPACKETSIZE 255
@@ -48,18 +62,28 @@ class Packet
 {
     public:
         Packet();
-        
-        unsigned char* getopCode(){ return opcode; }
-        unsigned char* getsAddr(){ return sAddr; }
-        unsigned char* getdAddr(){ return dAddr; }
-        unsigned char* getpSize(){ return pSize; }
-        unsigned char* getData(){ return data; }
+
+        //getters
+        uint8_t getopCode(){ return opcode; }
+        uint8_t getsAddr(){ return sAddr; }
+        uint8_t getdAddr(){ return dAddr; }
+        uint8_t getpSize(){ return pSize; }
+        uint8_t getData(){ return data; }
+
+        //setters
+        void setopCode(uint8_t code){ self.opCode=code; }
+        void setsAddr(uint8_t sAddr){ self.sAddr=sAddr; }
+        void setdAddr(uint8_t dAddr){ self.dAddr=dAddr; }
+        void setpSize(uint8_t pSize){ self.pSize=pSize; }
+        void setdata(uint8_t data){ self.data=data; }
+
     private:
-        unsigned char *opCode;
-        unsigned char *sAddr;
-        unsigned char *dAddr;
-        unsigned char *pSize;
-        unsigned char data[251];
+        //parts of the packet structure
+        uint8_t opCode;
+        uint8_t sAddr;
+        uint8_t dAddr;
+        uint8_t pSize;
+        uint8_t data[251];
 }
 
 //These functions are just placeholders currently, as this code is currently
@@ -68,10 +92,34 @@ class Packet
 class Network
 {
     public:
+        //default construct
         Network();
+        //Network Functions:
 
-        void initNetwork();
-}
+        //inits the network (main constructor)
+        retVal      initNetwork();
+        //fill a packet class object with data that was received
+        retVal      readPacket();
+        //send a packet 
+        retVal      sendPacket(Packet *p);
+        //fill a packet class object with data to send
+        retVal      createPacket(uint8_t opCode, uint8_t sAddr, uint8_t dAddr, uint8_t pSize, uint8_t data[], Packet* p);
+        //returns 1 if the chip running this fnc is coord
+        retVal      checkIfCoord();
+        //finds a path to coord
+        retVal      lookForCoord();
+        //inform network that we have coord connection
+        retVal      foundCoord();
+        //decide what to do with a received packet
+        retVal      receivedPacket();
+
+        void setPath(uint8_t p[])
+    private:
+        uint8_t Path[255];
+        uint8_t nextHop;
+        bool    haveCoord;
+        bool    amCoord;
+}   
 
 #endif
 
