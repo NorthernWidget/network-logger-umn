@@ -12,7 +12,7 @@
 // Modified for RFM69HCW by Mike Grusin, 4/16
 
 // This sketch will show you the basics of using an
-// RFM69HCW radio1 module. SparkFun's part numbers are:
+// RFM69HCW radio module. SparkFun's part numbers are:
 // 915MHz: https://www.sparkfun.com/products/12775
 // 434MHz: https://www.sparkfun.com/products/12823
 
@@ -57,8 +57,7 @@
 
 // Create a library object for our RFM69HCW module:
 
-RFM69 radio1;
-RFM69 radio2;
+RFM69 radio;
 
 void setup()
 {
@@ -79,19 +78,22 @@ void setup()
   // Initialize the RFM69HCW:
 
   digitalWrite(CS1, HIGH);
-  digitalWrite(CS2, LOW);
-  radio1.initialize(FREQUENCY, MYNODEID, NETWORKID);
-  radio1.setHighPower(); // Always use this for RFM69HCW
-  digitalWrite(CS1, LOW);
   digitalWrite(CS2, HIGH);
-  radio2.initialize(FREQUENCY, TONODEID, NETWORKID);
-  radio2.setHighPower();
+  delay(40);
+  digitalWrite(CS2, LOW);
+  radio.initialize(FREQUENCY, MYNODEID, NETWORKID);
+  radio.setHighPower(); // Always use this for RFM69HCW
+  digitalWrite(CS1, HIGH);
+  digitalWrite(CS2, HIGH);
+  delay(40);
+  digitalWrite(CS1, LOW);
+  radio.initialize(FREQUENCY, TONODEID, NETWORKID);
+  radio.setHighPower();
 
   // Turn on encryption if desired:
   
   if (ENCRYPT)
-    radio1.encrypt(ENCRYPTKEY);
-    radio2.encrypt(ENCRYPTKEY);
+    radio.encrypt(ENCRYPTKEY);
 }
 
 void loop()
@@ -108,10 +110,11 @@ void loop()
   // or (2) the buffer is full (61 characters).
   
   // If there is any serial input, add it to the buffer:
-
+  digitalWrite(CS1, HIGH);
+  digitalWrite(CS2, HIGH);
+  delay(40);
   if (Serial.available() > 0)
   {
-    digitalWrite(CS1, HIGH);
     digitalWrite(CS2, LOW);
     char input = Serial.read();
     
@@ -140,7 +143,7 @@ void loop()
       
       if (USEACK)
       {
-        if (radio1.sendWithRetry(TONODEID, sendbuffer, sendlength))
+        if (radio.sendWithRetry(TONODEID, sendbuffer, sendlength))
           Serial.println("ACK received!");
         else
           Serial.println("no ACK received :(");
@@ -150,58 +153,60 @@ void loop()
       
       else // don't use ACK
       {
-        radio1.send(TONODEID, sendbuffer, sendlength);
+        radio.send(TONODEID, sendbuffer, sendlength);
       }
       
       sendlength = 0; // reset the packet
 //      Blink(LED,10);
     }
   }
-
+  digitalWrite(CS1, HIGH);
+  digitalWrite(CS2, HIGH);
+  delay(40);
   // RECEIVING
 
   // In this section, we'll check with the RFM69HCW to see
   // if it has received any packets:
-
-  if (radio2.receiveDone()) // Got one!
+  digitalWrite(CS1, LOW);
+  if (radio.receiveDone()) // Got one!
   {
-    digitalWrite(CS1, LOW);
-    digitalWrite(CS2, HIGH);
+
     // Print out the information:
     
     Serial.print("received from node ");
-    Serial.print(radio2.SENDERID, DEC);
+    Serial.print(radio.SENDERID, DEC);
     Serial.print(": [");
 
     // The actual message is contained in the DATA array,
     // and is DATALEN bytes in size:
 
-    char arry[radio2.DATALEN];
-    for (byte i = 0; i < radio2.DATALEN; i++){
-      Serial.print((char)radio2.DATA[i]);
-      arry[i] = radio2.DATA[i];
+    char arry[radio.DATALEN];
+    for (byte i = 0; i < radio.DATALEN; i++){
+      Serial.print((char)radio.DATA[i]);
+      arry[i] = radio.DATA[i];
     }
 
     // RSSI is the "Receive Signal Strength Indicator",
     // smaller numbers mean higher power.
     
     Serial.print("], RSSI ");
-    Serial.println(radio2.RSSI);
+    Serial.println(radio.RSSI);
 
     // Send an ACK if requested.
     // (You don't need this code if you're not using ACKs.)
     
-    if (radio2.ACKRequested())
+    if (radio.ACKRequested())
     {
-      radio1.sendACK();
+      radio.sendACK();
       Serial.println("ACK sent");
     }
 
-    if(arry[0] == 'o' && arry[1] == 'n'){
-      digitalWrite(LED, HIGH);
-    }
-    else{
-      digitalWrite(LED, LOW);
-    }
+    digitalWrite(LED, HIGH);
+//    if(arry[0] == 'o' && arry[1] == 'n'){
+//      digitalWrite(LED, HIGH);
+//    }
+//    else{
+//      digitalWrite(LED, LOW);
+//    }
   }
 }
