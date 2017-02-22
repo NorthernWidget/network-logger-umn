@@ -51,13 +51,14 @@
 // Packet sent/received indicator LED (optional):
 
 #define LED           9 // LED positive pin
-#define CS1           2
-#define CS2           3
+#define CS1           8
+#define CS2           10
 //#define GND           8 // LED ground pin
 
 // Create a library object for our RFM69HCW module:
 
-RFM69 radio;
+RFM69 radio1;
+RFM69 radio2;
 
 void setup()
 {
@@ -69,7 +70,8 @@ void setup()
   Serial.println(" ready");  
 
   // Set up the indicator LED (optional):
-  
+  pinMode(CS1, OUTPUT);
+  pinMode(CS2, OUTPUT);
   pinMode(LED,OUTPUT);
   digitalWrite(LED,LOW);
   //pinMode(GND,OUTPUT);
@@ -81,19 +83,19 @@ void setup()
   digitalWrite(CS2, HIGH);
   delay(40);
   digitalWrite(CS2, LOW);
-  radio.initialize(FREQUENCY, MYNODEID, NETWORKID);
-  radio.setHighPower(); // Always use this for RFM69HCW
+  radio1.initialize(FREQUENCY, TONODEID, NETWORKID);
+  radio1.setHighPower(); // Always use this for RFM69HCW
   digitalWrite(CS1, HIGH);
   digitalWrite(CS2, HIGH);
   delay(40);
   digitalWrite(CS1, LOW);
-  radio.initialize(FREQUENCY, TONODEID, NETWORKID);
-  radio.setHighPower();
+  radio2.initialize(FREQUENCY, MYNODEID, NETWORKID);
+  radio2.setHighPower();
 
   // Turn on encryption if desired:
   
-  if (ENCRYPT)
-    radio.encrypt(ENCRYPTKEY);
+//  if (ENCRYPT)
+//    radio.encrypt(ENCRYPTKEY);
 }
 
 void loop()
@@ -143,7 +145,7 @@ void loop()
       
       if (USEACK)
       {
-        if (radio.sendWithRetry(TONODEID, sendbuffer, sendlength))
+        if (radio2.sendWithRetry(TONODEID, sendbuffer, sendlength))
           Serial.println("ACK received!");
         else
           Serial.println("no ACK received :(");
@@ -153,7 +155,8 @@ void loop()
       
       else // don't use ACK
       {
-        radio.send(TONODEID, sendbuffer, sendlength);
+        radio2.send(TONODEID, sendbuffer, sendlength);
+        Serial.println("No ACK Send"); //DEBUG!
       }
       
       sendlength = 0; // reset the packet
@@ -167,37 +170,37 @@ void loop()
 
   // In this section, we'll check with the RFM69HCW to see
   // if it has received any packets:
-  digitalWrite(CS1, LOW);
-  if (radio.receiveDone()) // Got one!
-  {
 
+  if (radio1.receiveDone()) // Got one!
+  {
+    digitalWrite(CS1, LOW);
     // Print out the information:
     
     Serial.print("received from node ");
-    Serial.print(radio.SENDERID, DEC);
+    Serial.print(radio1.SENDERID, DEC);
     Serial.print(": [");
 
     // The actual message is contained in the DATA array,
     // and is DATALEN bytes in size:
 
-    char arry[radio.DATALEN];
-    for (byte i = 0; i < radio.DATALEN; i++){
-      Serial.print((char)radio.DATA[i]);
-      arry[i] = radio.DATA[i];
+    char arry[radio1.DATALEN];
+    for (byte i = 0; i < radio1.DATALEN; i++){
+      Serial.print((char)radio1.DATA[i]);
+      arry[i] = radio1.DATA[i];
     }
 
     // RSSI is the "Receive Signal Strength Indicator",
     // smaller numbers mean higher power.
     
     Serial.print("], RSSI ");
-    Serial.println(radio.RSSI);
+    Serial.println(radio1.RSSI);
 
     // Send an ACK if requested.
     // (You don't need this code if you're not using ACKs.)
     
-    if (radio.ACKRequested())
+    if (radio1.ACKRequested())
     {
-      radio.sendACK();
+      radio1.sendACK();
       Serial.println("ACK sent");
     }
 

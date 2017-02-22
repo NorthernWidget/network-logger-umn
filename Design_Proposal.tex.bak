@@ -1,0 +1,508 @@
+
+
+%\usepackage{spconf}
+\documentclass[12pt]{article}
+%\usepackage{spconf}
+%\usepackage{cite}
+\usepackage{fullpage}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{psfrag}
+\usepackage{url}
+\usepackage{stfloats}
+%ken:
+\usepackage{amsmath,epsfig,amsfonts,amssymb,graphics,psfrag,theorem,calc,url,bm,cite}
+\usepackage{array}
+\usepackage{caption}
+\usepackage{calc}
+\usepackage{subfig}
+\usepackage{stfloats}
+\usepackage{cases}
+\usepackage{verbatim}
+%\usepackage{algorithm,algpseudocode}
+\usepackage[algoruled,linesnumbered]{algorithm2e}
+\usepackage{float}
+\DeclareGraphicsExtensions{.pdf,.jpeg,.png,.jpg,.eps}
+\restylefloat{table}
+\usepackage{lipsum}
+\usepackage{listings}
+
+\usepackage{color}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+%\usepackage{slashbox}
+%\setlength{\parindent}{0pt} %UNCOMMENT TO REMOVE INDENT AFTER PARAGRAPHS!
+\lstset{frame=tb,
+  language=Matlab,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  %keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3,
+  keywords = {for, if, else, end, function}, keywordstyle = \color{blue}
+}
+
+\renewcommand{\lstlistingname}{Code}
+%\include{EE4505/20160923_113129.jpg}
+
+
+\begin{document}
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\begin{titlepage}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+\center
+
+%----------------------------------------------------------------------------------------
+%	HEADING SECTIONS
+%----------------------------------------------------------------------------------------
+
+~\\[3cm]
+\mbox{\textsc{\LARGE University of Minnesota--Twin Cities}}\\[1.5cm]
+\textsc{\Large Open Source Data Logger \\[0.25cm]  Senior Design Team}\\[0.5cm]
+\textsc{}\\[0.5cm]
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\HRule \\[0.4cm]
+{ \Large \bfseries Design Proposal}\\[0cm]
+\HRule \\[2.4cm]
+
+%----------------------------------------------------------------------------------------
+%	AUTHOR SECTION
+%----------------------------------------------------------------------------------------
+
+\large Bobby \textsc{Schulz}\\
+\large Jeff \textsc{Worm}\\
+\large Luke \textsc{Cesarz}\\
+\large David \textsc{Nickel}\\
+\large Ying \textsc{Yang}\\[5cm]
+
+
+%----------------------------------------------------------------------------------------
+%	DATE SECTION
+%----------------------------------------------------------------------------------------
+
+{\large \today}\\[3cm]
+
+\end{titlepage}
+
+\section{Introduction}
+In today's world, a frequently desired technology among environmental scientists is a low cost, light weight, and low maintenance solution for logging data out in the field. The current implementation of the ALogger, by Northern Widget, offers this with their logger package. However, with a few added features an improved logger design could allow for an even lower maintenance more robust data logger. The proposed features would add accessibility through a long range radio network, which would turn the on board SD card into a local backup. The network formed by these radios would support storage on a central unit to allow for real time access to the logged data. 
+
+Environmental data loggers are used for a number of reasons, whether its agriculture, environmental protection, measuring seismic activity, etc. Real time data is important for these uses. It allows time for alerts to be sent out in the case where data was captured on an activity that could pose a threat to people in the area. Also with less trips out to the logger's location, it can help scientists take more frequent measurements. The loggers can also inform the deployer that there is a problem that needs to be addressed on one of the loggers. This will lead to more efficient data collection.  
+\section{Problem Statement}
+\label{sec:Problem}
+%Specifically referance lack of telemetry, power demands, and lack of programming space
+%Sepcifically referance extended time in the field with no servicing
+The current implementation of our data logger does exactly what would be expected: take measurements from sensors and store the information in an SD card. This is fine, but it can be made better by adding radio telemetry between data loggers and a centralized logger that can take all the data from the field and upload it to a server accessible through the internet. There are some closed source loggers available already provide these functionalities such as National Instruments Wireless Senson Networks or Onset HOBO Data Loggers, but they are fairly expensive and provide much more functionality than we need or have a similar cost to the new logger but do not provide some of the specific functionality needed. Not to mention we are trying to make an open source data logger, so other closed source projects will not help us much. \\
+
+Adding radio telemetry comes with its own set of problems though. The hardware needed is rather power hungry. Along similar lines the data will be accessible through the internet, so the loggers will be left in the field for long periods of time with no one coming to take the data and replace the batteries. With a power hungry device and no new batteries in sight, the power supply will need to be altered. Next, telemetry is not as simple as throwing data out on radio waves and hoping it makes it to the central data server; this is not only insecure and inefficient, but also will result in lost data. In order to ensure that our loggers get all of their data to the server there will need to be a wireless network setup with specific communication protocols to pass the data along to the server. Preferably this network will be able to setup its own paths to the server because setting up a network topology is far more work than the end user should be expected to do. Lastly, the processor used in the current design of the data logger is almost full with the current code that operates it. In order to fit the code for a network and server communication a new processor with similar peripherals and more memory will be needed on the new logger.
+
+\section{Proposed Design}
+\label{sec:Design}
+
+\subsection{Client Requirements}
+In this section the requirements of the client will be put forth, these are the abstract requirements which must be addressed in a technical manor within the system design %Fraked up sentance, kind of hate it, replace/fix later??
+\begin{itemize}
+\item Transmission range: $>$ 1 km \\
+{\small This is in order to ensure all nodes have enough transmission range to communicate with their nearest neighbor}
+\item Longevity: $>$ 1 year \\
+{\small This means that the system must be able to remain active and functional for at least 1 year without operator interference in the field}
+\item Internet connectivity: \\
+{\small This is a requirement that there is at least one home node which is capable of connecting to the internet and depositing data to a server}
+\item Smart Network: \\
+{\small This requirement states that a network topology must be implemented which does not need to be setup manually by the user, that a group of nodes be able to setup and maintain a network on their own. This network is needed since there is only a single home node in any group which connects to the internet, as a result all data must be returned through the network to the home node which will then deliver this data to a server}
+\end{itemize}
+
+\subsection{System Requirements}
+This section describes the required system elements which are required to realize the abstract requirements of the client in a technical manor %Another fraked up sentance, fix, then remember how to write not badly??
+
+\begin{itemize}
+\item Integrated telemetry radio: \\
+{\small  Since the system requires wireless data transmission, a telemetry radio must be Incorporated into the hardware redesign}
+\item Solar power electronics: \\
+{\small In order to have the extended lifetime required, a solar panel and rechargeable batteries must be utilized, this requires that a maximum power point tracker (MPPT) be implemented in hardware in order to utilize the solar panel effectively}
+\item Battery charge controller: \\
+{\small Since rechargeable batteries are to be used, a battery charge controller must be added in order to facilitate proper charging}
+\item %Software: Not quite sure how to describe the software requirments here, what do you want to put??
+\end{itemize}
+
+\section{Technical Approach}
+In order to address the problem, a two tiered design approach would be implemented, firstly a new hardware architecture would be developed which integrates the existing features of the system with enhanced processing capabilities, advanced power management systems, and wireless telemetry hardware. On top of this hardware framework, a software wireless network would be developed using a low level software and firmware integration which would allow for streamlined operation %Software: Add more/change??
+\subsection{Hardware Improvement}
+The proposed hardware development would not be starting anew, since there is an already existing hardware architecture that was developed by the client. This architecture would include all features and abilities available through the current architecture, but with the significant additions of a $915 MHz$ radio system, as well as more advanced power management in the form of a solar charge controller and switch-mode power supplies, and an overall improvement in processing capabilities with the use of a more advanced micro-controller which will serve to alleviate the programming bottlenecks currently being experienced by the client. %Cite or expand??
+
+As noted in Sec. \ref{sec:Design}, the primary goal of this project is to provide radio telemetry to the existing data logger system. In order to meet the various specifications of cost, transmission range, and power consumption specified by the client, a RFM69 $915 MHz$ radio system would be used. This unit provides a long transmission range, a reasonable form factor, and above all, low cost relative to comparable solutions. %Add specific cost metrics??
+Another significant benefit of this radio system is that there are already software libraries developed in order to perform many of the required low level operations for network formation, which significantly lowers the cost to implementation.
+
+As noted in Sec. \ref{sec:Problem}, one of the major problems with adding additional power consumptive hardware (such as the proposed telemetry radio) is that the unit is required to be in the field for extended periods without interaction (ie. changing of batteries or charging of the system). Previously the client had used disposable alkaline primary cells to power the system, however it was calculated that the power required to operate the telemetry radio would be too great to be sustained for the required time (~1 year) with these type of cells alone. As a result, it is proposed to switch to a rechargeable system using high capacity Li-Ion batteries as a storage device and utilizing a photovoltaic array (PV array, or solar array) for constant and sustainable energy harvesting. In order to accomplish this, a solar charge controller will be introduced into the hardware design. In a similar desire for high power efficiency, the low efficiency power electronics currently utilized by the client will be replaced with high efficiency switch-mode power supplies.
+
+Finally, in order to facilitate the current software requirements and add the additional network layer to the system, a more powerful micro-controller with a larger program memory is required. As a result it is proposed to switch from the current ATMEGA328P micro-controller to the more advanced ARM core based SAM21 micro-controller. This transition would provide for all required network overhead, while also providing for future system development.
+
+
+\subsection{Network Implementation}
+%Add network discussion for what will be done and why
+The proposed self discovery netowork will need to be written entirely from scratch because all of the software currently associated with the data loggers only handles local storage. Each node in the purposed network will be assigned one three roles: coordinator, router, or leaf node. The coordinator is the node that all other nodes send their data, and it is responsible for uploading the data to the server. A router node is between the coordinator and the leaf nodes; they are responsible for getting the data collected by the leaf nodes and themselves to the coordinator node. Leaf nodes are the furthest nodes form the coordinator, and their sole purpose is collecting data and passing it to a router node or the coordinator node.
+
+The network will be a self discovering network. When setting up the network, each node will go through a block of logic and decide what its role is and perform all necessary tasks. To start, the coordinator, who knows its role from server connection, will broadcast that it is the coordinator. The nodes close enough to hear that broadcast will take note of this, tell the coordinator that they plan to pass data directly to it, and then broadcast that they have coordintor connection. The nodes that hear this new broadcast will under go a similar process. Nodes that get told they will have data sent to them will be router nodes and conversely the nodes that do not receive this message will be leaf nodes. Through this setup process all the nodes in the network will have a dedicated path to the coordinator node. 
+
+\section{Project Management}
+
+\subsection{Time-line}
+%Copy over from design proposal and talk about it a bit
+Hardware and software groups are going to work in parallel. 
+
+On the hardware side, basic functionalities of the radio will be tested with simple Arduino code. New parts used in the solar/battery management system (BMS) are to be selected based on customer's requirements, especially the solar charge controller and switching mode converter. Prototype board of the power section will be designed and built for testing. And if all functionalities are proved to be working smoothly, the PCB will be updated with the new parts. 
+
+Meanwhile the software group will work on network implementation. Priorities of various network communication features are determined at first, and then pseudo-code is written to provide an outline of the entire project. Since we are switching to a different micro-controller in the new version of data logger, firmware potentially needs to be changed. And software can be written and tested following the structure shown in the pseudo-code. Finally, the newly implemented code will be integrated with current working code, in order to allow a single set of code working for both versions of data logger. 
+
+Timelines for both groups are shown in the tables below. Rearrangements may be made according to unexpected design changes or other limitations.
+
+%Copy over from design proposal and talk about it a bit
+
+\begin{table}[H]
+\centering
+\caption{Hardware Timeline}
+\begin{tabular}{ |c|c|c|}
+\hline
+ \bf Task & \bf Start Date & \bf Days to Complete\\ 
+ \hline
+%Item	& Start Date &	Time [days] \\
+Background Research 	& 1-Feb	& 5 \\
+Radio Testing	& 6-Feb	& 3 \\
+BMS/Solar Design	 & 6-Feb	& 7 \\
+Spec Parts	& 13-Feb	 & 2 \\
+Prototype BMS/Solar	& 20-Feb	 & 4 \\
+PCB Preliminary Design 	& 24-Feb &	7 \\
+Order Parts	& 15-Feb	 & 1 \\
+Order Preliminary Board  &	1-Mar	 & 1 \\
+Populate and Test Preliminary Board 	& 14-Mar & 	5 \\
+Final PCB Design	& 9-Apr & 	5 \\
+Final Design Testing	 & 24-Apr &	3 \\
+Final Presentation & 5-May & 1 \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\begin{table}[H]
+\centering
+\caption{Software Timeline}
+\begin{tabular}{ |c|c|c|}
+\hline
+ \bf Task & \bf Start Date & \bf Days to Complete\\ 
+ \hline
+%Item	& Start Date &	Time [days] \\
+Network requirements 	& Completed	& N/A \\
+Network Priorities 	& 1-Feb &	5 \\
+Network pseudo-code	 & 7-Feb	& 5 \\
+Firmware Porting and Testing	& 13-Feb	& 3 \\
+Network Code	& 20-Feb & 	10 \\
+Network Testing	 & 7-Mar &	10 \\
+Code Integration	& 25-Mar	 & 5 \\
+Integrated Testing	& 5-Apr	 & 5 \\
+Final Presentation & 5-May & 1 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Budget}
+%Add budget discussion
+\begin{table}[H]
+\centering
+\caption{Itemized Budget}
+\label{my-label}
+\begin{tabular}{lll}
+\textbf{Item Name}         & \textbf{Purpose}                      & \textbf{Cost {[}\${]}} \\
+\hline
+Arduino Zero      & Prototyping                  & \$50          \\
+Development Parts & Prototyping                  & \$350         \\
+PCB Development   & Prototyping                  & \$150         \\
+Solar Cells       & Prototyping                  & \$60          \\
+Batteries         & Prototyping                  & \$40          \\
+\hline
+                  &                              &               \\
+                   & \textbf{Development Total}            & \$650         \\
+                   &								 &\\
+PCB               & Production                   & \$50*         \\
+Generic Parts     & Production                   & \$30          \\
+Radio (RFM69)     & Production                   & \$10          \\
+Batteries         & Production                   & \$40          \\
+Solar Pannel      & Production                   & \$24          \\
+\hline
+                  &                              &               \\
+
+                  & \textbf{Production Total (per board)} & \$154
+\end{tabular}
+\end{table}
+
+%Add note about asterisk, currently an estimate, quote to be determined based on volume and supplier
+
+\section{Conclusion}
+Between more frequent measurement feedback, being able to read those measurements from far away, and not having to disturb the logger and the area around it to get your measurements, adding a radio network to these loggers would be beneficial on all accounts.  The data would also be much more accessible to enthusiasts and professions outside of the field of enviromental science.
+
+Our team is more than capable of developing new radio network functionality to the existing design, as well as optimizing the board layout to match the inclusion to keep good battery life and power effeciency.  Alternate options for a data logger either fail to provide vital functions or are excessive in price.  Our option provides a robust, inexpensive option that efficiently gathers and transmits the data straight to the end user, with little interaction with the physical system beyond setup.  This project is a fantastic opportunity to create a practical, automated logging system that can be used to boost the information output without sacrificing a lower price tag.
+
+\end{document}
+
+%\usepackage{spconf}
+\documentclass[12pt]{article}
+%\usepackage{spconf}
+%\usepackage{cite}
+\usepackage{fullpage}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{psfrag}
+\usepackage{url}
+\usepackage{stfloats}
+%ken:
+\usepackage{amsmath,epsfig,amsfonts,amssymb,graphics,psfrag,theorem,calc,url,bm,cite}
+\usepackage{array}
+\usepackage{caption}
+\usepackage{calc}
+\usepackage{subfig}
+\usepackage{stfloats}
+\usepackage{cases}
+\usepackage{verbatim}
+%\usepackage{algorithm,algpseudocode}
+\usepackage[algoruled,linesnumbered]{algorithm2e}
+\usepackage{float}
+\DeclareGraphicsExtensions{.pdf,.jpeg,.png,.jpg,.eps}
+\restylefloat{table}
+\usepackage{lipsum}
+\usepackage{listings}
+
+\usepackage{color}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+%\usepackage{slashbox}
+%\setlength{\parindent}{0pt} %UNCOMMENT TO REMOVE INDENT AFTER PARAGRAPHS!
+\lstset{frame=tb,
+  language=Matlab,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  %keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3,
+  keywords = {for, if, else, end, function}, keywordstyle = \color{blue}
+}
+
+\renewcommand{\lstlistingname}{Code}
+%\include{EE4505/20160923_113129.jpg}
+
+
+\begin{document}
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\begin{titlepage}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+\center
+
+%----------------------------------------------------------------------------------------
+%	HEADING SECTIONS
+%----------------------------------------------------------------------------------------
+
+~\\[3cm]
+\mbox{\textsc{\LARGE University of Minnesota--Twin Cities}}\\[1.5cm]
+\textsc{\Large Open Source Data Logger \\[0.25cm]  Senior Design Team}\\[0.5cm]
+\textsc{}\\[0.5cm]
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\HRule \\[0.4cm]
+{ \Large \bfseries Design Proposal}\\[0cm]
+\HRule \\[2.4cm]
+
+%----------------------------------------------------------------------------------------
+%	AUTHOR SECTION
+%----------------------------------------------------------------------------------------
+
+\large Bobby \textsc{Schulz}\\
+\large Jeff \textsc{Worm}\\
+\large Luke \textsc{Cesarz}\\
+\large David \textsc{Nickel}\\
+\large Ying \textsc{Yang}\\[5cm]
+
+
+%----------------------------------------------------------------------------------------
+%	DATE SECTION
+%----------------------------------------------------------------------------------------
+
+{\large \today}\\[3cm]
+
+\end{titlepage}
+
+\section{Introduction}
+
+\section{Problem Statement}
+\label{sec:Problem}
+%Specifically referance lack of telemetry, power demands, and lack of programming space
+%Sepcifically referance extended time in the field with no serviceing
+
+\section{Proposed Design}
+\label{sec:Design}
+
+\subsection{Client Requirements}
+In this section the requirements of the client will be put forth, these are the abstract requirements which must be addressed in a technical manor within the system design %Fraked up sentance, kind of hate it, replace/fix later??
+\begin{itemize}
+\item Transmission range: $>$ 1 km \\
+{\small This is in order to ensure all nodes have enough transmission range to communicate with their nearest neighbor}
+\item Longevity: $>$ 1 year \\
+{\small This means that the system must be able to remain active and functional for at least 1 year without operator interference in the field}
+\item Internet connectivity: \\
+{\small This is a requirement that there is at least one home node which is capable of connecting to the internet and depositing data to a server}
+\item Smart Network: \\
+{\small This requirement states that a network topology must be implemented which does not need to be setup manually by the user, that a group of nodes be able to setup and maintain a network on their own. This network is needed since there is only a single home node in any group which connects to the internet, as a result all data must be returned through the network to the home node which will then deliver this data to a server}
+\end{itemize}
+
+\subsection{System Requirements}
+This section describes the required system elements which are required to realize the abstract requirements of the client in a technical manor %Another fraked up sentance, fix, then remember how to write not badly??
+
+\begin{itemize}
+\item Integrated telemetry radio: \\
+{\small  Since the system requires wireless data transmission, a telemetry radio must be Incorporated into the hardware redesign}
+\item Solar power electronics: \\
+{\small In order to have the extended lifetime required, a solar panel and rechargeable batteries must be utilized, this requires that a maximum power point tracker (MPPT) be implemented in hardware in order to utilize the solar panel effectively}
+\item Battery charge controller: \\
+{\small Since rechargeable batteries are to be used, a battery charge controller must be added in order to facilitate proper charging}
+\item %Software: Not quite sure how to describe the software requirments here, what do you want to put??
+\end{itemize}
+
+\section{Technical Approach}
+In order to address the problem, a two tiered design approach would be implemented, firstly a new hardware architecture would be developed which integrates the existing features of the system with enhanced processing capabilities, advanced power management systems, and wireless telemetry hardware. On top of this hardware framework, a software wireless network would be developed using a low level software and firmware integration which would allow for streamlined operation %Software: Add more/change??
+\subsection{Hardware Improvement}
+The proposed hardware development would not be starting anew, since there is an already existing hardware architecture that was developed by the client. This architecture would include all features and abilities available through the current architecture, but with the significant additions of a $915 MHz$ radio system, as well as more advanced power management in the form of a solar charge controller and switch-mode power supplies, and an overall improvement in processing capabilities with the use of a more advanced micro-controller which will serve to alleviate the programming bottlenecks currently being experienced by the client. %Cite or expand??
+
+As noted in Sec. \ref{sec:Design}, the primary goal of this project is to provide radio telemetry to the existing data logger system. In order to meet the various specifications of cost, transmission range, and power consumption specified by the client, a RFM69 $915 MHz$ radio system would be used. This unit provides a long transmission range, a reasonable form factor, and above all, low cost relative to comparable solutions. %Add specific cost metrics??
+Another significant benefit of this radio system is that there are already software libraries developed in order to perform many of the required low level operations for network formation, which significantly lowers the cost to implementation.
+
+As noted in Sec. \ref{sec:Problem}, one of the major problems with adding additional power consumptive hardware (such as the proposed telemetry radio) is that the unit is required to be in the field for extended periods without interaction (ie. changing of batteries or charging of the system). Previously the client had used disposable alkaline primary cells to power the system, however it was calculated that the power required to operate the telemetry radio would be too great to be sustained for the required time (~1 year) with these type of cells alone. As a result, it is proposed to switch to a rechargeable system using high capacity Li-Ion batteries as a storage device and utilizing a photovoltaic array (PV array, or solar array) for constant and sustainable energy harvesting. In order to accomplish this, a solar charge controller will be introduced into the hardware design. In a similar desire for high power efficiency, the low efficiency power electronics currently utilized by the client will be replaced with high efficiency switch-mode power supplies.
+
+Finally, in order to facilitate the current software requirements and add the additional network layer to the system, a more powerful micro-controller with a larger program memory is required. As a result it is proposed to switch from the current ATMEGA328P micro-controller to the more advanced ARM core based SAM21 micro-controller. This transition would provide for all required network overhead, while also providing for future system development.
+
+
+\subsection{Network Implementation}
+%Add network discussion for what will be done and why
+
+
+
+
+
+
+\section{Project Management}
+
+\subsection{Time-line}
+Hardware and software groups will work in parallel. On the hardware side, new parts are to be selected and ordered based on customer's requirements, especially the solar charge controller and the switch-mode converter. Prototype board of power system only will be designed for testing, and if all functionalities are proved to be working smoothly, the entire PCB can be updated. Meanwhile, the software group will work on network configuration. 
+
+Timeline for both groups are listed in tables below. Things may be changed according to design changes or other unespected limitations. 
+
+%Copy over from design proposal and talk about it a bit
+\caption{Hardware}
+\begin{table}[H]
+\centering
+\begin{center}
+\begin{tabular}{ |c|c|c|}
+\hline
+ \bf Item & \bf Start Date & \bf Days to Complete\\ 
+ \hline
+%Item	& Start Date &	Time [days] \\
+Background Research 	& 1-Feb	& 5 \\
+PCB Preliminary Design 	& 24-Feb &	7 \\
+BMS/Solar Design	 & 6-Feb	& 7 \\
+Radio Testing	& 6-Feb	& 3 \\
+Spec Parts	& 13-Feb	 & 2 \\
+Prototype BMS/Solar	& 20-Feb	 & 4 \\
+Order Parts	& 15-Feb	 & 1 \\
+Order Preliminary Board  &	1-Mar	 & 1 \\
+Populate and Test Preliminary Board 	& 14-Mar & 	5 \\
+Final PCB Design	& 9-Apr & 	5 \\
+Final Design Testing	 & 24-Apr &	3 \\
+Final Presentation & 5-May & 1 \\
+\end{tabular}
+\end{table}
+
+\caption{Software}
+\begin{table}[H]
+\centering
+\begin{center}
+\begin{tabular}{ |c|c|c|}
+\hline
+ \bf Item & \bf Start Date & \bf Days to Complete\\ 
+ \hline
+%Item	& Start Date &	Time [days] \\
+Network requirements 	& Completed	& N/A \\
+Network Priorities 	& 1-Feb &	5 \\
+Network pseudocode	 & 1-Feb	& 5 \\
+Firmware Porting and Testing	& 6-Feb	& 3 \\
+Network Code	& 12-Feb & 	10 \\
+Network Testing	 & 23-Feb &	10 \\
+Code Integration	& 5-Mar	 & 5 \\
+Integrated Testing	& 20-Mar	 & 5 \\
+Final Presentation & 5-May & 1 \\
+\end{tabular}
+\end{table}
+
+\subsection{Budget}
+%Add budget discussion
+\begin{table}[H]
+\centering
+\caption{Itemized Budget}
+\label{my-label}
+\begin{tabular}{lll}
+\textbf{Item Name}         & \textbf{Purpose}                      & \textbf{Cost {[}\${]}} \\
+\hline
+Arduino Zero      & Prototyping                  & \$50          \\
+Development Parts & Prototyping                  & \$350         \\
+PCB Development   & Prototyping                  & \$150         \\
+Solar Cells       & Prototyping                  & \$60          \\
+Batteries         & Prototyping                  & \$40          \\
+\hline
+                  &                              &               \\
+                   & \textbf{Development Total}            & \$650         \\
+                   &								 &\\
+PCB               & Production                   & \$50*         \\
+Generic Parts     & Production                   & \$30          \\
+Radio (RFM69)     & Production                   & \$10          \\
+Batteries         & Production                   & \$40          \\
+Solar Pannel      & Production                   & \$24          \\
+\hline
+                  &                              &               \\
+
+                  & \textbf{Production Total (per board)} & \$154
+\end{tabular}
+\end{table}
+
+%Add note about asterisk, currently an estimate, quote to be determined based on volume and supplier
+
+\section{Conclusion}
+
+\end{document}
