@@ -49,7 +49,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define IHAVECOORD 0x04
 #define IAMCOORD 0x05
 #define UAREPATH 0x06
-#define ACK 0x07
 
 //Function to make an opcode a broadcast Opcode
 #define BroadCast(x) 0x80 | (x)
@@ -79,11 +78,11 @@ class Packet
 
     private:
         //parts of the packet structure
-        uint8_t opCode;
+        uint8_t opCode;         //Operation we are performing (data transmission, I have coord, etc.)
         uint8_t sAddr;
-        uint8_t dAddr;
-        uint8_t pSize;
-        uint8_t data[251];
+        uint8_t dAddr;          //Destination address
+        uint8_t pSize;          //Packet size
+        uint8_t data[255];      //The data (optional)
 }
 
 //These functions are just placeholders currently, as this code is currently
