@@ -41,7 +41,7 @@
 
 // AES encryption (or not):
 
-#define ENCRYPT       false // Set to "true" to use encryption
+#define ENCRYPT       true // Set to "true" to use encryption
 #define ENCRYPTKEY    "TOPSECRETPASSWRD" // Use the same 16-byte key on all nodes
 
 // Use ACKnowledge when sending messages (or not):
@@ -57,8 +57,7 @@
 
 // Create a library object for our RFM69HCW module:
 
-RFM69 radio1;
-RFM69 radio2;
+RFM69 radio;
 
 void setup()
 {
@@ -70,40 +69,40 @@ void setup()
   Serial.println(" ready");  
 
   // Set up the indicator LED (optional):
-  pinMode(CS1, OUTPUT);
   pinMode(CS2, OUTPUT);
-  pinMode(LED,OUTPUT);
-  digitalWrite(LED,LOW);
+  pinMode(LED, OUTPUT);
   //pinMode(GND,OUTPUT);
   //digitalWrite(GND,LOW);
     
   // Initialize the RFM69HCW:
 
-  digitalWrite(CS1, HIGH);
-  digitalWrite(CS2, HIGH);
-  delay(40);
   digitalWrite(CS2, LOW);
-  radio1.initialize(FREQUENCY, TONODEID, NETWORKID);
-  radio1.setHighPower(); // Always use this for RFM69HCW
-  digitalWrite(CS1, HIGH);
-  digitalWrite(CS2, HIGH);
-  delay(40);
-  digitalWrite(CS1, LOW);
-  radio2.initialize(FREQUENCY, MYNODEID, NETWORKID);
-  radio2.setHighPower();
+  digitalWrite(LED, LOW);
+  delay(4);
+  radio.initialize(FREQUENCY, MYNODEID, NETWORKID);
+  radio.writeReg(0x03,0x0A);
+  radio.writeReg(0x04,0x00);
+  radio.setHighPower(); // Always use this for RFM69HCW
+
 
   // Turn on encryption if desired:
   
-//  if (ENCRYPT)
-//    radio.encrypt(ENCRYPTKEY);
+  if (ENCRYPT)
+  radio.encrypt(ENCRYPTKEY);
 }
 
 void loop()
 {
   // Set up a "buffer" for characters that we'll send:
+  /*Serial.println("Bit rate LSB:");
+  Serial.println(radio.readReg(0x04));*/
   
-  static char sendbuffer[62];
-  static int sendlength = 0;
+  static char sendbuffer[4];
+  for(int i = 0; i<4; i++)
+  {
+    sendbuffer[i]= 'a';
+  }
+  static int sendlength = 4;
 
   // SENDING
 
@@ -112,104 +111,12 @@ void loop()
   // or (2) the buffer is full (61 characters).
   
   // If there is any serial input, add it to the buffer:
-  digitalWrite(CS1, HIGH);
-  digitalWrite(CS2, HIGH);
-  delay(40);
-  if (Serial.available() > 0)
+  if(radio.sendWithRetry(TONODEID, sendbuffer, sendlength))
   {
-    digitalWrite(CS2, LOW);
-    char input = Serial.read();
-    
-    if (input != '\r') // not a carriage return
-    {
-      sendbuffer[sendlength] = input;
-      sendlength++;
-    }
-
-    // If the input is a carriage return, or the buffer is full:
-    
-    if ((input == '\r') || (sendlength == 61)) // CR or buffer full
-    {
-      // Send the packet!
-
-
-      Serial.print("sending to node ");
-      Serial.print(TONODEID, DEC);
-      Serial.print(": [");
-      for (byte i = 0; i < sendlength; i++)
-        Serial.print(sendbuffer[i]);
-      Serial.println("]");
-      
-      // There are two ways to send packets. If you want
-      // acknowledgements, use sendWithRetry():
-      
-      if (USEACK)
-      {
-        if (radio2.sendWithRetry(TONODEID, sendbuffer, sendlength))
-          Serial.println("ACK received!");
-        else
-          Serial.println("no ACK received :(");
-      }
-
-      // If you don't need acknowledgements, just use send():
-      
-      else // don't use ACK
-      {
-        radio2.send(TONODEID, sendbuffer, sendlength);
-        Serial.println("No ACK Send"); //DEBUG!
-      }
-      
-      sendlength = 0; // reset the packet
-//      Blink(LED,10);
-    }
+    digitalWrite(LED,HIGH);
   }
-  digitalWrite(CS1, HIGH);
-  digitalWrite(CS2, HIGH);
-  delay(40);
-  // RECEIVING
-
-  // In this section, we'll check with the RFM69HCW to see
-  // if it has received any packets:
-
-  if (radio1.receiveDone()) // Got one!
-  {
-    digitalWrite(CS1, LOW);
-    // Print out the information:
-    
-    Serial.print("received from node ");
-    Serial.print(radio1.SENDERID, DEC);
-    Serial.print(": [");
-
-    // The actual message is contained in the DATA array,
-    // and is DATALEN bytes in size:
-
-    char arry[radio1.DATALEN];
-    for (byte i = 0; i < radio1.DATALEN; i++){
-      Serial.print((char)radio1.DATA[i]);
-      arry[i] = radio1.DATA[i];
-    }
-
-    // RSSI is the "Receive Signal Strength Indicator",
-    // smaller numbers mean higher power.
-    
-    Serial.print("], RSSI ");
-    Serial.println(radio1.RSSI);
-
-    // Send an ACK if requested.
-    // (You don't need this code if you're not using ACKs.)
-    
-    if (radio1.ACKRequested())
-    {
-      radio1.sendACK();
-      Serial.println("ACK sent");
-    }
-
-    digitalWrite(LED, HIGH);
-//    if(arry[0] == 'o' && arry[1] == 'n'){
-//      digitalWrite(LED, HIGH);
-//    }
-//    else{
-//      digitalWrite(LED, LOW);
-//    }
-  }
+  
+  delay(1000);
+  digitalWrite(LED,LOW);
+  delay(1000);
 }
