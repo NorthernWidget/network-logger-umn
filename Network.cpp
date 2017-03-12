@@ -1,7 +1,8 @@
+
 /*
  * =====================================================================================
  *
- *       Filename:  Network.h
+ *       Filename:  Network.cpp
  *
  *    Description:  Protocol used for radio communication using the ALogger
  *
@@ -39,42 +40,109 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <Network.h>
 
-void Network::Network(){}
+//Default Constructor
+void Network::Network() {}
 
-retVal Network::readPacket(Packet *p){
-  if(this.radio.receiveDone())
-  {
-      p->setdSize(this.radio.PAYLOADLEN-1);
-      p->setsAddr(this.radio.SENDERID);
-      p->setdAddr(this.radio.TARGETID);
-      p->setopCode(this.radio.DATA[0]);
-      for(int i = 0; i < p->getdSize(); i++){
-        p->setdata(this.radio.DATA[i+1],i);
-      }
-      for(int i = p->getdSize(); i < 60; i++){
-        p->setdata(0,i);
-      }
-      return SUCCESS;
-  }
-  return NOMESSAGE;
+retVal Network::initNetwork(uint8_t networkID)
+{
+    //TODO: set myID from EEPROM
+    this.networkID = networkID;
+    digitalWrite(radioChipSelectPin, LOW);
+    //TODO: set other chip selects high
+    radio.initialize(RF69_915MHZ, this.myID, this.networkID);
+    radio.writeReg(0x03, 0x0A);
+    radio.writeReg(0x04, 0x00);
+    radio.setHighPower();
+    //TODO: check usb connection and (un)set amCoord then broadcast i am coord
 }
 
-retVal Network::sendPacket(Packet *p){
-  uint8_t data[p->getdSize()+1];
-  data[0] = p->getopCode();
-  for(int i = 0; i < p->getdSize(); i++){
-    data[i+1] = p->getdata(i);
-  }
-  if(this.useAck){
-    if(this.radio.sendWithRetry(p->getdAddr(),data, p->getdSize()+1)){
-      return SUCCESS;
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Fills a packet class object with data from a packet that
+ * that has been received. Returns NOMESSAGE if there was
+ * nothing to be received, ow returns SUCCESS
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+retVal Network::readPacket(Packet* p)
+{
+    digitalWrite(radioChipSelectPin, LOW);
+    //TODO: set other chip selects high
+    if (this.radio.receiveDone()) {
+        if (this.radio.ACKRequested())
+            this.radio.sendACK();
+        p->setdSize(this.radio.PAYLOADLEN - 1);
+        p->setsAddr(this.radio.SENDERID);
+        p->setdAddr(this.radio.TARGETID);
+        p->setopCode(this.radio.DATA[0]);
+        p->setRSSI(this.radio.readRSSI());
+        for (int i = 0; i < p->getdSize(); i++) {
+            p->setdata(this.radio.DATA[i + 1], i);
+        }
+        for (int i = p->getdSize(); i < MAXDATASIZE; i++) {
+            p->setdata(0, i);
+        }
+        return SUCCESS;
     }
-    else{
-      return NOACK;
+    return NOMESSAGE;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Sends the packet to the node identified by p->getdAddr()
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+retVal Network::sendPacket(Packet* p)
+{
+    digitalWrite(radioChipSelectPin, LOW);
+    //TODO: set other chip selects high
+    uint8_t data[p->getdSize() + 1];
+    data[0] = p->getopCode();
+    for (int i = 0; i < p->getdSize(); i++) {
+        data[i + 1] = p->getdata(i);
     }
-  }
-  else{
-    this.radio.send(p->getdAddr(),data, p->getdSize()+1);
-    return SUCCESS;
-  }
+    if (this.useAck && p->getdAddr() != BROADCASTADDRESS) {
+        if (this.radio.sendWithRetry(p->getdAddr(), data, p->getdSize() + 1)) {
+            return SUCCESS;
+        }
+        else {
+            return NOACK;
+        }
+    }
+    else {
+        this.radio.send(p->getdAddr(), data, p->getdSize() + 1);
+        return SUCCESS;
+    }
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Fills the packet pointed to by p with the info passed in
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+void Network::createPacket(uint8_t opCode, uint8_t sAddr, uint8_t dAddr, uint8_t dSize, uint8_t data[], Packet* p)
+{
+    p->setopCode(opCode);
+    p->setsAddr(sAddr);
+    p->setdAddr(dAddr);
+    p->setdSize(dSize);
+    for (int i = 0; i < dSize; i++)
+        p->setdata(data[i], i);
+    for (int i = dSize; i < MAXDATASIZE; i++)
+        p->setdata(0, i);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Sends a broadcast packet to the network looking for 
+ * the coordinator node
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+void Network::lookForCoord()
+{
+    Packet* p = new Packet();
+    createPacket(ASKFORCOORD, this.myID, BROADCASTADDRESS, 0, null, p);
+    sendPacket(p);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Sends a broadcast packet to the network saying that 
+ * we have a connection to coord
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+void Network::foundCoord()
+{
+    Packet* p = new Packet();
+    createPacket(IHAVECOORD, this.myID, BROADCASTADDRESS, 0, null, p);
+    sendPacket(p);
 }
