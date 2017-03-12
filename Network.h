@@ -38,10 +38,16 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <Logger.h>
+#include <RFM69.h>
+#include <SPI.h>
 #ifndef Network_h
 #define Network_h
+//radio globals
+#define FREQUENCY     RF69_915MHZ
+const uint8_t radioChipSelectPin = 10 //TODO:this is just a random number, change it when the board layout is done
 //RetVal
 #define retVal uint8_t
+enum Status {SUCCESS, FAIL, NOMESSAGE, NOACK};
 //Opcodes
 #define DTRANSMISSION 0x01
 #define DROPPEDCOORD 0x02
@@ -49,9 +55,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define IHAVECOORD 0x04
 #define IAMCOORD 0x05
 #define UAREPATH 0x06
-
-//Function to make an opcode a broadcast Opcode
-#define BroadCast(x) 0x80 | (x)
 
 
 /*Defining the packet*/
@@ -66,27 +69,27 @@ class Packet
         uint8_t getopCode(){ return opcode; }
         uint8_t getsAddr(){ return sAddr; }
         uint8_t getdAddr(){ return dAddr; }
-        uint8_t getpSize(){ return pSize; }
-        uint8_t getData(){ return data; }
+        uint8_t getdSize(){ return dSize; }
+        uint8_t getData(int index){ return data[index]; }
 
         //setters
-        void setopCode(uint8_t code){ self.opCode=code; }
-        void setsAddr(uint8_t sAddr){ self.sAddr=sAddr; }
-        void setdAddr(uint8_t dAddr){ self.dAddr=dAddr; }
-        void setpSize(uint8_t pSize){ self.pSize=pSize; }
-        void setdata(uint8_t data){ self.data=data; }
+        void setopCode(uint8_t code){ this.opCode=code; }
+        void setsAddr(uint8_t sAddr){ this.sAddr=sAddr; }
+        void setdAddr(uint8_t dAddr){ this.dAddr=dAddr; }
+        void setdSize(uint8_t dSize){ this.dSize=dSize; }
+        void setdata(uint8_t data, int index){ this.data[index]=data; }
 
     private:
         //parts of the packet structure
         uint8_t opCode;         //Operation we are performing (data transmission, I have coord, etc.)
-        uint8_t sAddr;
+        uint8_t sAddr;          //Source address
         uint8_t dAddr;          //Destination address
-        uint8_t pSize;          //Packet size
-        uint8_t data[255];      //The data (optional)
+        uint8_t dSize;          //Size of info in data
+        uint8_t data[60];      //The data (optional)
 }
 
 //These functions are just placeholders currently, as this code is currently
-//in development. 
+//in development.
 //
 class Network
 {
@@ -98,12 +101,12 @@ class Network
         //inits the network (main constructor)
         retVal      initNetwork();
         //fill a packet class object with data that was received
-        retVal      readPacket();
-        //send a packet 
+        retVal      readPacket(Packet *p);
+        //send a packet
         retVal      sendPacket(Packet *p);
         //fill a packet class object with data to send
         retVal      createPacket(uint8_t opCode, uint8_t sAddr, uint8_t dAddr, uint8_t pSize, uint8_t data[], Packet* p);
-        //returns 1 if the chip running this fnc is coord
+        //returns SUCCESS if the chip running this fnc is coord
         retVal      checkIfCoord();
         //finds a path to coord
         retVal      lookForCoord();
@@ -114,11 +117,16 @@ class Network
 
         void setPath(uint8_t p[])
     private:
+        RFM69 radio;            //the radio object
+        uint8_t myID;           //TODO:set this from EEPROM in initialization
+        bool useAck = true;     //do we want acks
+//        bool encrypt = false;   //TODO:this will be implemented last
+//        char *encryptKey;       //TODO:this will be implemented last
+        uint8_t networkID = 0;
         uint8_t Path[255];
         uint8_t nextHop;
         bool    haveCoord;
         bool    amCoord;
-}   
+}
 
 #endif
-

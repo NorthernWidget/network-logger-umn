@@ -41,7 +41,40 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 void Network::Network(){}
 
-int main(void)
-{
-    while(1);
+retVal Network::readPacket(Packet *p){
+  if(this.radio.receiveDone())
+  {
+      p->setdSize(this.radio.PAYLOADLEN-1);
+      p->setsAddr(this.radio.SENDERID);
+      p->setdAddr(this.radio.TARGETID);
+      p->setopCode(this.radio.DATA[0]);
+      for(int i = 0; i < p->getdSize(); i++){
+        p->setdata(this.radio.DATA[i+1],i);
+      }
+      for(int i = p->getdSize(); i < 60; i++){
+        p->setdata(0,i);
+      }
+      return SUCCESS;
+  }
+  return NOMESSAGE;
+}
+
+retVal Network::sendPacket(Packet *p){
+  uint8_t data[p->getdSize()+1];
+  data[0] = p->getopCode();
+  for(int i = 0; i < p->getdSize(); i++){
+    data[i+1] = p->getdata(i);
+  }
+  if(this.useAck){
+    if(this.radio.sendWithRetry(p->getdAddr(),data, p->getdSize()+1)){
+      return SUCCESS;
+    }
+    else{
+      return NOACK;
+    }
+  }
+  else{
+    this.radio.send(p->getdAddr(),data, p->getdSize()+1);
+    return SUCCESS;
+  }
 }
