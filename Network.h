@@ -1,4 +1,3 @@
-
 /*
  * =====================================================================================
  *
@@ -41,29 +40,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <Logger.h>
 #include <RFM69.h>
 #include <SPI.h>
-#include <Packet.h>
-#include <Queue.h>
 #ifndef Network_h
 #define Network_h
 //radio globals
 //#define FREQUENCY     RF69_915MHZ
 const uint8_t radioChipSelectPin = 10 //TODO:this is just a random number, change it when the board layout is done
     //RetVal
-enum retVal { SUCCESS, 		//Generic Success
-        	  FAIL, 		//Generic Failure
-        	  NOMESSAGE, 	//No message received to read in
-        	  NOACK }; 		//An ACK was requested and not received
+    enum retVal { SUCCESS, 		//Generic Success
+        		  FAIL, 		//Generic Failure
+        		  NOMESSAGE, 	//No message received to read in
+        		  NOACK, 		//An ACK was requested and not received
+        		  IGNORED, 		//A message was received that we don't need to do anything for
+        		  INQUEUED, 	//Info added to a queue of received info to be handled later
+        		  OUTQUEUED, 	//Info added to a queue to be retransmited later
+        		  DROPPED }; 	//Queue was full and the info was lost
 //Opcodes
-#define DTRANSMISSION 0x01
-#define DROPPEDCOORD 0x02
-#define ASKFORCOORD 0x03
-#define IHAVECOORD 0x04
-#define IAMCOORD 0x05
-#define UAREPATH 0x06
+#define DTRANSMISSION 0x01 //dataOwner, data0, data1, ... , dataN use dSize to determin N
+#define DROPPEDCOORD 0x02 //no data
+#define ASKFORCOORD 0x03 //no data
+#define IHAVECOORD 0x04 //no data
+#define IAMCOORD 0x05 //no data
+#define UAREPATH 0x06 //no data
 
 /*Defining the packet*/
 #define MAXDATASIZE 60
 #define BROADCASTADDRESS 255
+#define DEFAULTWAITTIME 10000 //10 seconds TBD
+#define MAXMISSCOUNT 5 //TBD
+#define MAXATTEMPTS 5 //TBD
 
 //These functions are just placeholders currently, as this code is currently
 //in development.
@@ -75,39 +79,53 @@ public:
 
     //Network Functions:
     //inits the network (main constructor) and sets the network ID
-    void initNetwork(uint8_t networkID);                    //done
+    void initNetwork(uint8_t networkID);
 
+    //handles the every wake network events
+    retVal runNetwork();
+
+    //The data to the network class for forwarding to the coordinator
+    bool sendOverNetwork(float data){ return dataQueue.enqueue(data) };
+
+private:
     //fill a packet class object with data that was received
-    retVal readPacket(Packet* p);                           //done
+    retVal readPacket(Packet* p);
 
     //send a packet
-    retVal sendPacket(Packet* p);                           //done
+    retVal sendPacket(Packet* p);
 
-    //fill a packet class object with data to send          //done
-    void createPacket(uint8_t opCode, uint8_t sAddr, uint8_t dAddr, uint8_t dSize, uint8_t data[], Packet* p);      
+    //fill a packet class object with data to send
+    void createPacket(uint8_t opCode, uint8_t sAddr, uint8_t dAddr, uint8_t dSize, uint8_t data[], Packet* p);
 
     //returns true if the chip running this fnc is coord
-    bool checkIfCoord(){ return this.amCoord };             //done
+    bool checkIfCoord(){ return this.amCoord };
 
     //finds a path to coord
-    void lookForCoord();                                    //done
+    void lookForCoord();
 
     //inform network that we have coord connection
-    void foundCoord();                                      //done
+    void foundCoord();
 
     //decide what to do with a received packet
-    retVal receivedPacket(Packet* p);                       //TODO
+    retVal receivedPacket(Packet* p);
 
-    void setPath(uint8_t p[]) private : RFM69 radio; //the radio object
+    void setPath(uint8_t p[])
+
+        RFM69 radio; //the radio object
     uint8_t myID; //TODO:set this from EEPROM in initialization
     bool useAck = true; //do we want acks
     //bool 		encrypt = false;   //TODO:this will be implemented last
     //char 		*encryptKey;       //TODO:this will be implemented last
     uint8_t networkID = 0;
-    uint8_t Path[255];
+    uint8_t leaves[255];
+    uint8_t leafindex = 0;
     uint8_t nextHop;
     bool haveCoord;
     bool amCoord;
+    Queue<float> dataQueue;
+    Queue<Packet*> inQueue;
+    Queue<Packet*> outQueue;
+    //TODO add counter to check how many attempts to send outQueued items
 }
 
 #endif

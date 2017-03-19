@@ -39,7 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <Network.h>
 
-//Default Constructor, this should be the only one we need
+//Default Constructor
 void Network::Network() {}
 
 retVal Network::initNetwork(uint8_t networkID)
@@ -52,7 +52,7 @@ retVal Network::initNetwork(uint8_t networkID)
     radio.writeReg(0x03, 0x0A);
     radio.writeReg(0x04, 0x00);
     radio.setHighPower();
-    //TODO: check usb connection and (un)set amCoord then broadcast i am coord
+    //TODO: check usb connection and (un)set amCoord then (do nothing)broadcast i am coord
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -131,7 +131,7 @@ void Network::createPacket(uint8_t opCode, uint8_t sAddr, uint8_t dAddr, uint8_t
 void Network::lookForCoord()
 {
     Packet* p = new Packet();
-    createPacket(ASKFORCOORD, this.myID, BROADCASTADDRESS, 0, null, p);
+    createPacket(ASKFORCOORD, this.myID, BROADCASTADDRESS, 0, NULL, p);
     sendPacket(p);
 }
 
@@ -142,6 +142,115 @@ void Network::lookForCoord()
 void Network::foundCoord()
 {
     Packet* p = new Packet();
-    createPacket(IHAVECOORD, this.myID, BROADCASTADDRESS, 0, null, p);
+    createPacket(IHAVECOORD, this.myID, BROADCASTADDRESS, 0, NULL, p);
     sendPacket(p);
+}
+
+retVal runNetwork()
+{
+    while (tbd) {
+        if (!(this.haveCoord || this.amCoord)) {
+            lookForCoord();
+            delay(DEFAULTWAITTIME); //Times to be determined. DEFAULTWAITTIME is just a placeholder for time being
+        }
+        Packet* p = new Packet();
+        uint8_t misscount = 0;
+        while (missCount < MAXMISSCOUNT) {
+            if (readPacket(p) == SUCCESS)
+                receivedPacket(p);
+            else
+                misscount++;
+            delay(DEFAULTWAITTIME);
+        }
+        if (this.haveCoord) {
+            //TODO: forward data and send your own data
+        }
+        else if (this.amCoord) {
+            //TODO: upload to server
+        }
+        else {
+            //TODO: choose path and found coord and set have coord
+        }
+    }
+}
+
+retVal receivedPacket(Packet* p)
+{
+    uint8_t opCode = p->getopCode();
+    if ((this.haveCoord || this.amCoord) && opCode == DTRANSMISSION) {
+        //add the data to a queue of packets to be retransmited
+        p->setdAddr(this.nextHop);
+        bool ok = inQueue.enqueue(p);
+        if (ok)
+            return INQUEUED;
+        return DROPPED;
+    }
+    else if (!(this.haveCoord || this.amCoord) && (opCode == IHAVECOORD || opCode == IAMCOORD)) {
+        //add the offer to a queue of packets to choose the one with the best RSSI later
+        bool ok = inQueue.enqueue(p);
+        if (ok)
+            return INQUEUED;
+        return DROPPED;
+    }
+  else if(!(this.haveCoord || this.amCoord) && (opCode == DTRANSMISSION || opCode == UAREPATH){
+        //This is the recipt of a packet we should only get if we have access to the coordinator,
+        //so tell the sender that we don't have coordinator access.
+        Packet* s;
+        unit8_t numAttempts = 0;
+        createPacket(DROPPEDCOORD, this.myId, p->getsAddr(), 0, NULL, s);
+        while (numAttempts < MAXATTEMPTS && sendPacket(s) == NOACK)
+            numAttempts++;
+        if (numAttempts == MAXATTEMPTS) {
+            outQueue.enqueue(s);
+            return OUTQUEUED;
+        }
+        return SUCCESS;
+  }
+  else if((this.haveCoord || this.amCoord) && opCode == DROPPEDCOORD && p->getsAddr() == this.nextHop){
+        //Our next hop no longer has coordinator access so we can brodcast it to our leaves
+        Packet* s;
+        this.leafindex = 0;
+        createPacket(DROPPEDCOORD, this.myId, BROADCASTADDRESS, 0, NULL, s);
+        sendPacket(s);
+        return SUCCESS;
+  }
+ 	else if(this.amCoord && opCode == ASKFORCOORD){
+        //This is the coordinator and someone requested access, let them know I can hear them
+        Packet* s;
+        uint8_t numAttempts = 0;
+        this.leafindex = 0;
+        createPacket(IAMCOORD, this.myId, p->getsAddr(), 0, NULL, s);
+        while (numAttempts < MAXATTEMPTS && sendPacket(s) == NOACK)
+            numAttempts++;
+        if (numAttempts == MAXATTEMPTS) {
+            outQueue.enqueue(s);
+            return OUTQUEUED;
+        }
+        return SUCCESS;
+  }
+  else if(this.haveCoord && opCode == ASKFORCOORD){
+        //This is has coordinator access and someone requested access, let them know I can hear them
+        Packet* s;
+        uint8_t numAttempts = 0;
+        this.leafindex = 0;
+        createPacket(IHAVECOORD, this.myId, p->getsAddr(), 0, NULL, s);
+        while (numAttempts < MAXATTEMPTS && sendPacket(s) == NOACK)
+            numAttempts++;
+        if (numAttempts == MAXATTEMPTS) {
+            outQueue.enqueue(s);
+            return OUTQUEUED;
+        }
+        return SUCCESS;
+  }
+  else if((this.haveCoord || this.amCoord) && opCode == UAREPATH){
+        //Someone is says they are using this address as next hop it should be stored
+        for (int i = 0; i < leafindex; i++) {
+            if (this.leaves[leafindex] == p->getAddr())
+                return IGNORED;
+        }
+        this.leaves[leafindex] = p->getsAddr();
+        this.leafindex++;
+        return SUCCESS;
+  }
+  return IGNORED;
 }
