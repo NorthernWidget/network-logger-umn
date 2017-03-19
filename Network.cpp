@@ -1,4 +1,3 @@
-
 /*
  * =====================================================================================
  *
@@ -40,7 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <Network.h>
 
-//Default Constructor
+//Default Constructor, this should be the only one we need
 void Network::Network() {}
 
 retVal Network::initNetwork(uint8_t networkID)

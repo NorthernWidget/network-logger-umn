@@ -41,6 +41,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <Logger.h>
 #include <RFM69.h>
 #include <SPI.h>
+#include <Packet.h>
+#include <Queue.h>
 #ifndef Network_h
 #define Network_h
 //radio globals
@@ -63,36 +65,6 @@ enum retVal { SUCCESS, 		//Generic Success
 #define MAXDATASIZE 60
 #define BROADCASTADDRESS 255
 
-class Packet {
-public:
-    Packet();
-
-    //getters
-    uint8_t getopCode() { return opcode; }
-    uint8_t getsAddr() { return sAddr; }
-    uint8_t getdAddr() { return dAddr; }
-    uint8_t getdSize() { return dSize; }
-    uint8_t getData(int index) { return data[index]; }
-    uint16_t getRSSI() { return RSSI; }
-
-    //setters
-    void setopCode(uint8_t code) { this.opCode = code; }
-    void setsAddr(uint8_t sAddr) { this.sAddr = sAddr; }
-    void setdAddr(uint8_t dAddr) { this.dAddr = dAddr; }
-    void setdSize(uint8_t dSize) { this.dSize = dSize; }
-    void setdata(uint8_t data, int index) { this.data[index] = data; }
-    void setRSSI(uint16_t RSSI) { this.RSSI = RSSI; }
-
-private:
-    //parts of the packet structure
-    uint8_t opCode; //Operation we are performing (data transmission, I have coord, etc.)
-    uint8_t sAddr; //Source address
-    uint8_t dAddr; //Destination address
-    uint8_t dSize; //Size of info in data
-    uint8_t data[MAXDATASIZE]; //The data (optional)
-    uint16_t RSSI //the signal strength
-}
-
 //These functions are just placeholders currently, as this code is currently
 //in development.
 //
@@ -103,28 +75,28 @@ public:
 
     //Network Functions:
     //inits the network (main constructor) and sets the network ID
-    void initNetwork(uint8_t networkID);
+    void initNetwork(uint8_t networkID);                    //done
 
     //fill a packet class object with data that was received
-    retVal readPacket(Packet* p);
+    retVal readPacket(Packet* p);                           //done
 
     //send a packet
-    retVal sendPacket(Packet* p);
+    retVal sendPacket(Packet* p);                           //done
 
-    //fill a packet class object with data to send
-    void createPacket(uint8_t opCode, uint8_t sAddr, uint8_t dAddr, uint8_t dSize, uint8_t data[], Packet* p);
+    //fill a packet class object with data to send          //done
+    void createPacket(uint8_t opCode, uint8_t sAddr, uint8_t dAddr, uint8_t dSize, uint8_t data[], Packet* p);      
 
     //returns true if the chip running this fnc is coord
-    bool checkIfCoord(){ return this.amCoord };
+    bool checkIfCoord(){ return this.amCoord };             //done
 
     //finds a path to coord
-    void lookForCoord();
+    void lookForCoord();                                    //done
 
     //inform network that we have coord connection
-    void foundCoord();
+    void foundCoord();                                      //done
 
     //decide what to do with a received packet
-    retVal receivedPacket(Packet* p);
+    retVal receivedPacket(Packet* p);                       //TODO
 
     void setPath(uint8_t p[]) private : RFM69 radio; //the radio object
     uint8_t myID; //TODO:set this from EEPROM in initialization
