@@ -47,10 +47,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#define FREQUENCY     RF69_915MHZ
 const uint8_t radioChipSelectPin = 10 //TODO:this is just a random number, change it when the board layout is done
     //RetVal
-    enum retVal { SUCCESS, 		//Generic Success
-        		  FAIL, 		//Generic Failure
-        		  NOMESSAGE, 	//No message received to read in
-        		  NOACK }; 		//An ACK was requested and not received
+enum retVal { SUCCESS, 		//Generic Success
+        	  FAIL, 		//Generic Failure
+        	  NOMESSAGE, 	//No message received to read in
+        	  NOACK }; 		//An ACK was requested and not received
 //Opcodes
 #define DTRANSMISSION 0x01
 #define DROPPEDCOORD 0x02
