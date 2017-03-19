@@ -17,9 +17,6 @@
  */
 
 #include "Queue.h"
-#include <iostream>
-using namespace std;
-
 
 template<class T>
 Queue<T>::Queue(): frontPtr(NULL), backPtr(NULL), count(0)
@@ -32,36 +29,41 @@ bool Queue<T>::isEmpty(){
 }
 
 template<class T>
-void Queue<T>::enqueue(T data){
+bool Queue<T>::enqueue(T data){
+  if(count < MAXQUEUESIZE){
     Node *newOne = new Node;
     newOne->date = data;
     newOne->next = NULL;
     if(isEmpty()){
-        frontPtr = newOne;
+      frontPtr = newOne;
     }
-        else{
-            backPtr->next = newOne;
-        }
-        backPtr = newOne;
-        count++;
+    else{
+      backPtr->next = newOne;
+    }
+    backPtr = newOne;
+    count++;
+    return true;
+  }
+  return false;
 }
 
 template<class T>
-void Queue<T>::dequeue(){
+T Queue<T>::dequeue(T* data){
     if(isEmpty()){
-        cout << "Nothing inside" << endl;
+        return false;
     }
-        else{
-            Node *temp = frontPtr;
-            if(frontPtr == backPtr){
-                frontPtr = NULL;
-                backPtr = NULL;
-            }
-            else{
-                frontPtr = frontPtr->next;
-            }
-            delete temp;
-            count--;
+    else{
+        Node *temp = frontPtr;
+        if(frontPtr == backPtr){
+            frontPtr = NULL;
+            backPtr = NULL;
         }
+        else{
+            frontPtr = frontPtr->next;
+        }
+        data = &(temp->date);
+        delete temp;
+        count--;
+        return true;
+    }
 }
-
