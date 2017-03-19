@@ -22,26 +22,23 @@
 #define MAXQUEUESIZE 20
 #include <cstddef>
 
-template<class T>
-class Queue
-{
-    public:
-        Queue();
-        bool isEmpty();
-        bool enqueue(T data);
-        bool dequeue(T* data);
+template <class T>
+class Queue {
+public:
+    Queue();
+    bool isEmpty();
+    bool enqueue(T data);
+    bool dequeue(T* data);
 
+private:
+    struct Node {
+        T date;
+        Node* next;
+    };
 
-    private:
-        struct Node{
-            T date;
-            Node *next;
-        };
-
-        Node *frontPtr;
-        Node *backPtr;
-        int count;
-
+    Node* frontPtr;
+    Node* backPtr;
+    int count;
 };
 
 #endif // QUEUE_H

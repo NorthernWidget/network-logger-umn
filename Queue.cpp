@@ -18,47 +18,53 @@
 
 #include "Queue.h"
 
-template<class T>
-Queue<T>::Queue(): frontPtr(NULL), backPtr(NULL), count(0)
+template <class T>
+Queue<T>::Queue()
+    : frontPtr(NULL)
+    , backPtr(NULL)
+    , count(0)
 {
 }
 
-template<class T>
-bool Queue<T>::isEmpty(){
-    return(count == 0);
+template <class T>
+bool Queue<T>::isEmpty()
+{
+    return (count == 0);
 }
 
-template<class T>
-bool Queue<T>::enqueue(T data){
-  if(count < MAXQUEUESIZE){
-    Node *newOne = new Node;
-    newOne->date = data;
-    newOne->next = NULL;
-    if(isEmpty()){
-      frontPtr = newOne;
+template <class T>
+bool Queue<T>::enqueue(T data)
+{
+    if (count < MAXQUEUESIZE) {
+        Node* newOne = new Node;
+        newOne->date = data;
+        newOne->next = NULL;
+        if (isEmpty()) {
+            frontPtr = newOne;
+        }
+        else {
+            backPtr->next = newOne;
+        }
+        backPtr = newOne;
+        count++;
+        return true;
     }
-    else{
-      backPtr->next = newOne;
-    }
-    backPtr = newOne;
-    count++;
-    return true;
-  }
-  return false;
+    return false;
 }
 
-template<class T>
-T Queue<T>::dequeue(T* data){
-    if(isEmpty()){
+template <class T>
+T Queue<T>::dequeue(T* data)
+{
+    if (isEmpty()) {
         return false;
     }
-    else{
-        Node *temp = frontPtr;
-        if(frontPtr == backPtr){
+    else {
+        Node* temp = frontPtr;
+        if (frontPtr == backPtr) {
             frontPtr = NULL;
             backPtr = NULL;
         }
-        else{
+        else {
             frontPtr = frontPtr->next;
         }
         data = &(temp->date);
