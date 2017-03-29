@@ -148,30 +148,18 @@ void Network::foundCoord()
 
 retVal runNetwork()
 {
-    while (tbd) {
-        if (!(this.haveCoord || this.amCoord)) {
-            lookForCoord();
-            delay(DEFAULTWAITTIME); //Times to be determined. DEFAULTWAITTIME is just a placeholder for time being
-        }
-        Packet* p = new Packet();
-        uint8_t misscount = 0;
-        while (missCount < MAXMISSCOUNT) {
-            if (readPacket(p) == SUCCESS)
-                receivedPacket(p);
-            else
-                misscount++;
-            delay(DEFAULTWAITTIME);
-        }
-        if (this.haveCoord) {
-            //TODO: forward data and send your own data
-        }
-        else if (this.amCoord) {
-            //TODO: upload to server
-        }
-        else {
-            //TODO: choose path and found coord and set have coord
-        }
-    }
+    if(this.amCoord){
+		//listen
+		//push to server
+	}
+	else if(this.haveCoord){
+		//send yourdata
+		//listen forward
+	}
+	else{
+		//ask for coord
+		//listen and choose best next hop
+	}
 }
 
 retVal receivedPacket(Packet* p)
