@@ -82,7 +82,7 @@ public:
     void initNetwork(uint8_t networkID);
 
     //handles the every wake network events
-    retVal runNetwork();
+    void runNetwork();
 
     //The data to the network class for forwarding to the coordinator
     bool sendOverNetwork(float data){ return dataQueue.enqueue(data) };
@@ -109,9 +109,9 @@ private:
     //decide what to do with a received packet
     retVal receivedPacket(Packet* p);
 
-    void setPath(uint8_t p[])
+    //void setPath(uint8_t p[])
 
-        RFM69 radio; //the radio object
+    RFM69 radio; //the radio object
     uint8_t myID; //TODO:set this from EEPROM in initialization
     bool useAck = true; //do we want acks
     //bool 		encrypt = false;   //TODO:this will be implemented last
@@ -120,12 +120,11 @@ private:
     uint8_t leaves[255];
     uint8_t leafindex = 0;
     uint8_t nextHop;
+    uint16_t currentRSSI = 0;
     bool haveCoord;
     bool amCoord;
+    bool reconnected = false;
     Queue<float> dataQueue;
-    Queue<Packet*> inQueue;
-    Queue<Packet*> outQueue;
-    //TODO add counter to check how many attempts to send outQueued items
 }
 
 #endif

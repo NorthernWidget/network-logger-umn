@@ -125,7 +125,7 @@ void Network::createPacket(uint8_t opCode, uint8_t sAddr, uint8_t dAddr, uint8_t
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Sends a broadcast packet to the network looking for 
+ * Sends a broadcast packet to the network looking for
  * the coordinator node
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void Network::lookForCoord()
@@ -136,7 +136,7 @@ void Network::lookForCoord()
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Sends a broadcast packet to the network saying that 
+ * Sends a broadcast packet to the network saying that
  * we have a connection to coord
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void Network::foundCoord()
@@ -146,12 +146,12 @@ void Network::foundCoord()
     sendPacket(p);
 }
 
-retVal runNetwork()
+void Network::runNetwork()
 {
     uint8_t noPacketReceived=0;
-    Packet *p;
+    Packet *p = new Packet();
     if(this.amCoord){
-		//listen
+		    //listen
         //TODO figure out these timeouts, there are infinite ways to do them,
         //but I think this way will work: have a counter on the number of times
         //a packet was not received and once it exceeds COORDLISTENTIMEOUT then
@@ -166,10 +166,10 @@ retVal runNetwork()
             //TODO sleep for some amount of time. Can change the sleep time depending
             //on whether or not we received a packet.
         }
-		//push to server TODO:(I think we should do this in receivedPacket) -Luke
+		    //push to server TODO:(I think we should do this in receivedPacket) -Luke
 	}
 	else if(this.haveCoord){
-		//send yourdata
+		    //send yourdata
         uint8_t data[MAXDATASIZE];
         uint8_t size;
         float d;
@@ -181,10 +181,25 @@ retVal runNetwork()
                 data[i++] = d >> 8;
                 data[i++] = d;
             }
-            sendPacket(createPacket(DTRANSMISSION, this.myID, this.nextHop, size, data, p));
-            //TODO handle what happens on timeout (Never get ACK'd)
+            uint8_t failedSend = 0;
+            createPacket(DTRANSMISSION, this.myID, this.nextHop, size, data, p);
+            while((sendPacket(p) == NOACK) && (failedSend < DROPPEDPACKETTIMEOUT)){
+              failedSend++;
+              //TODO sleep for some amount of time. (Sould we sleep or immedeately try to resend?)
+            }
+            if(failedSend == DROPPEDPACKETTIMEOUT){
+              //TODO handle what happens on timeout (Never get ACK'd)
+              //probibly something along the lines of:
+              //this.haveCoord = false;
+              //this.currentRSSI = 0;
+              //createPacket(DROPPEDCOORD, this.myID, BROADCASTADDRESS, 0, NULL, p);
+              //sendPacket(p);
+              //delete p;
+              //radio.sleep();
+              //return;
+            }
         }
-		//listen forward
+		    //listen forward
         while(noPacketReceived < ROUTERLISTENTIMEOUT){
             if(readPacket(p) != NOMESSAGE){
                 receivedPacket(p);
@@ -199,9 +214,10 @@ retVal runNetwork()
         }
 	}
 	else{
-		//ask for coord
-        sendPacket(createPacket(ASKFORCOORD, this.myID, BROADCASTADDRESS,0,NULL,p));
-		//listen and choose best next hop
+		    //ask for coord
+        createPacket(ASKFORCOORD, this.myID, BROADCASTADDRESS,0,NULL,p);
+        sendPacket(p);
+		    //listen and choose best next hop
         while(noPacketReceived < LFCLISTENTIMEOUT /* && wait for multiple answers*/){
             if(readPacket(p) != NOMESSAGE){
                 receivedPacket(p);
@@ -214,8 +230,16 @@ retVal runNetwork()
             //TODO sleep for some amount of time. Can change the sleep time depending
             //on whether or not we received a packet.
         }
-        //TODO choose next best hop from the queue we made in receivedPacket
+        //next best hop is selected in receivedPacket()
+        //after we have listened long enough and we have
+        //reconnected we can say we have coord again and
+        //move on to the next round of runNetwork()
+        if(this.reconnected){
+          this.reconnected = false;
+          this.haveCoord = true;
+        }
 	}
+  delete p;
 }
 
 retVal receivedPacket(Packet* p)
