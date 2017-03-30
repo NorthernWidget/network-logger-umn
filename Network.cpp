@@ -148,17 +148,73 @@ void Network::foundCoord()
 
 retVal runNetwork()
 {
+    uint8_t noPacketReceived=0;
+    Packet *p;
     if(this.amCoord){
 		//listen
-		//push to server
+        //TODO figure out these timeouts, there are infinite ways to do them,
+        //but I think this way will work: have a counter on the number of times
+        //a packet was not received and once it exceeds COORDLISTENTIMEOUT then
+        //stop listening we also tune the sleeps accordingly.
+        while(noPacketReceived < COORDLISTENTIMEOUT){
+            if(readPacket(p) != NOMESSAGE){
+                receivedPacket(p);
+            }
+            else{
+                noPacketReceived++;
+            }
+            //TODO sleep for some amount of time. Can change the sleep time depending
+            //on whether or not we received a packet.
+        }
+		//push to server TODO:(I think we should do this in receivedPacket) -Luke
 	}
 	else if(this.haveCoord){
 		//send yourdata
+        uint8_t data[MAXDATASIZE];
+        uint8_t size;
+        float d;
+        while(!dataQueue.isEmpty()){
+            for(size=0 ; size<MAXDATASIZE-3 && !dataQueue.isEmpty() ; size++){
+                d = dataQueue.dequeue();
+                data[i++] = d >> 24;
+                data[i++] = d >> 16;
+                data[i++] = d >> 8;
+                data[i++] = d;
+            }
+            sendPacket(createPacket(DTRANSMISSION, this.myID, this.nextHop, size, data, p));
+            //TODO handle what happens on timeout (Never get ACK'd)
+        }
 		//listen forward
+        while(noPacketReceived < ROUTERLISTENTIMEOUT){
+            if(readPacket(p) != NOMESSAGE){
+                receivedPacket(p);
+                //TODO may need to add a case to handle this in receivedPacket:
+                //if(!this.amCoord && opCode == DTRANSMISSION) to forward data
+            }
+            else{
+                noPacketReceived++;
+            }
+            //TODO sleep for some amount of time. Can change the sleep time depending
+            //on whether or not we received a packet.
+        }
 	}
 	else{
 		//ask for coord
+        sendPacket(createPacket(ASKFORCOORD, this.myID, BROADCASTADDRESS,0,NULL,p));
 		//listen and choose best next hop
+        while(noPacketReceived < LFCLISTENTIMEOUT /* && wait for multiple answers*/){
+            if(readPacket(p) != NOMESSAGE){
+                receivedPacket(p);
+                //TODO may need to add a case to handle this in receivedPacket:
+                //make sure to put this in the right queue
+            }
+            else{
+                noPacketReceived++;
+            }
+            //TODO sleep for some amount of time. Can change the sleep time depending
+            //on whether or not we received a packet.
+        }
+        //TODO choose next best hop from the queue we made in receivedPacket
 	}
 }
 
