@@ -14056,9 +14056,6 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <part name="GND37" library="supply1" deviceset="GND" device=""/>
 <part name="R11" library="rcl" deviceset="R-EU_" device="R0603" value="10k"/>
 <part name="R12" library="rcl" deviceset="R-EU_" device="R0603" value="10k"/>
-<part name="C18" library="rcl" deviceset="C-EU" device="C0603"/>
-<part name="R13" library="rcl" deviceset="R-EU_" device="R0603"/>
-<part name="R14" library="rcl" deviceset="R-EU_" device="R0603"/>
 </parts>
 <sheets>
 <sheet>
@@ -14386,6 +14383,11 @@ Connect SD_CD to mux input</text>
 <label x="38.1" y="147.32" size="1.778" layer="95"/>
 <pinref part="S3" gate="G$1" pin="2"/>
 </segment>
+<segment>
+<pinref part="RTC1" gate="G$1" pin="RST"/>
+<wire x1="91.44" y1="203.2" x2="83.82" y2="203.2" width="0.1524" layer="91"/>
+<label x="83.82" y="203.2" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="N$9" class="0">
 <segment>
@@ -14411,7 +14413,7 @@ Connect SD_CD to mux input</text>
 <junction x="40.64" y="109.22"/>
 </segment>
 </net>
-<net name="USB_D-" class="0">
+<net name="UBS_D-" class="0">
 <segment>
 <pinref part="U1" gate="G$1" pin="PA24(SER3:2+)"/>
 <wire x1="116.84" y1="96.52" x2="127" y2="96.52" width="0.1524" layer="91"/>
@@ -15075,6 +15077,13 @@ Use I2C or UART?</text>
 <label x="5.08" y="30.48" size="1.778" layer="95"/>
 </segment>
 </net>
+<net name="RST" class="0">
+<segment>
+<pinref part="U3" gate="G$1" pin="RESET"/>
+<wire x1="20.32" y1="22.86" x2="12.7" y2="22.86" width="0.1524" layer="91"/>
+<label x="12.7" y="22.86" size="1.778" layer="95"/>
+</segment>
+</net>
 <net name="N$28" class="0">
 <segment>
 <pinref part="U3" gate="G$1" pin="ANT"/>
@@ -15344,16 +15353,14 @@ Add 4 GPIO lines</text>
 <instance part="J2" gate="G$1" x="137.16" y="81.28" rot="R180"/>
 <instance part="J3" gate="G$1" x="20.32" y="58.42" rot="R180"/>
 <instance part="GND32" gate="1" x="104.14" y="73.66"/>
-<instance part="GND33" gate="1" x="66.04" y="58.42"/>
-<instance part="R38" gate="G$1" x="73.66" y="55.88" rot="R90"/>
-<instance part="R39" gate="G$1" x="73.66" y="45.72" rot="R90"/>
+<instance part="GND33" gate="1" x="43.18" y="58.42"/>
+<instance part="R38" gate="G$1" x="50.8" y="55.88" rot="R90"/>
+<instance part="R39" gate="G$1" x="50.8" y="45.72" rot="R90"/>
 <instance part="GND23" gate="1" x="30.48" y="121.92"/>
 <instance part="J4" gate="G$1" x="15.24" y="109.22" rot="R90"/>
 <instance part="GND34" gate="1" x="27.94" y="104.14"/>
 <instance part="J5" gate="G$1" x="170.18" y="106.68" rot="R180"/>
 <instance part="J6" gate="G$1" x="20.32" y="124.46"/>
-<instance part="R13" gate="G$1" x="38.1" y="58.42"/>
-<instance part="R14" gate="G$1" x="38.1" y="55.88"/>
 </instances>
 <busses>
 </busses>
@@ -15413,8 +15420,8 @@ Add 4 GPIO lines</text>
 </segment>
 <segment>
 <pinref part="J3" gate="G$1" pin="GND"/>
-<wire x1="25.4" y1="63.5" x2="66.04" y2="63.5" width="0.1524" layer="91"/>
-<wire x1="66.04" y1="63.5" x2="66.04" y2="60.96" width="0.1524" layer="91"/>
+<wire x1="25.4" y1="63.5" x2="43.18" y2="63.5" width="0.1524" layer="91"/>
+<wire x1="43.18" y1="63.5" x2="43.18" y2="60.96" width="0.1524" layer="91"/>
 <pinref part="GND33" gate="1" pin="GND"/>
 </segment>
 <segment>
@@ -15655,11 +15662,18 @@ Add 4 GPIO lines</text>
 <label x="63.5" y="78.74" size="1.778" layer="95"/>
 </segment>
 </net>
+<net name="USB_D+" class="0">
+<segment>
+<pinref part="J3" gate="G$1" pin="D+"/>
+<wire x1="25.4" y1="58.42" x2="33.02" y2="58.42" width="0.1524" layer="91"/>
+<label x="27.94" y="58.42" size="1.778" layer="95"/>
+</segment>
+</net>
 <net name="USB_HOST_EN" class="0">
 <segment>
 <pinref part="R39" gate="G$1" pin="1"/>
-<wire x1="73.66" y1="40.64" x2="73.66" y2="35.56" width="0.1524" layer="91"/>
-<label x="73.66" y="38.1" size="1.778" layer="95" rot="R180"/>
+<wire x1="50.8" y1="40.64" x2="50.8" y2="35.56" width="0.1524" layer="91"/>
+<label x="50.8" y="38.1" size="1.778" layer="95" rot="R180"/>
 </segment>
 </net>
 <net name="5V" class="0">
@@ -15675,19 +15689,26 @@ Add 4 GPIO lines</text>
 </segment>
 <segment>
 <pinref part="R38" gate="G$1" pin="2"/>
-<wire x1="73.66" y1="60.96" x2="73.66" y2="63.5" width="0.1524" layer="91"/>
-<label x="73.66" y="60.96" size="1.778" layer="95" rot="R90"/>
+<wire x1="50.8" y1="60.96" x2="50.8" y2="63.5" width="0.1524" layer="91"/>
+<label x="50.8" y="60.96" size="1.778" layer="95" rot="R90"/>
+</segment>
+</net>
+<net name="USB_D-" class="0">
+<segment>
+<pinref part="J3" gate="G$1" pin="D-"/>
+<wire x1="25.4" y1="55.88" x2="33.02" y2="55.88" width="0.1524" layer="91"/>
+<label x="27.94" y="55.88" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="N$50" class="0">
 <segment>
 <pinref part="J3" gate="G$1" pin="ID"/>
-<wire x1="25.4" y1="60.96" x2="60.96" y2="60.96" width="0.1524" layer="91"/>
-<wire x1="60.96" y1="60.96" x2="60.96" y2="50.8" width="0.1524" layer="91"/>
-<wire x1="60.96" y1="50.8" x2="73.66" y2="50.8" width="0.1524" layer="91"/>
+<wire x1="25.4" y1="60.96" x2="38.1" y2="60.96" width="0.1524" layer="91"/>
+<wire x1="38.1" y1="60.96" x2="38.1" y2="50.8" width="0.1524" layer="91"/>
+<wire x1="38.1" y1="50.8" x2="50.8" y2="50.8" width="0.1524" layer="91"/>
 <pinref part="R38" gate="G$1" pin="1"/>
 <pinref part="R39" gate="G$1" pin="2"/>
-<junction x="73.66" y="50.8"/>
+<junction x="50.8" y="50.8"/>
 </segment>
 </net>
 <net name="ADC6" class="0">
@@ -15768,34 +15789,6 @@ Add 4 GPIO lines</text>
 <label x="144.78" y="119.38" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="N$15" class="0">
-<segment>
-<pinref part="J3" gate="G$1" pin="D+"/>
-<wire x1="25.4" y1="58.42" x2="33.02" y2="58.42" width="0.1524" layer="91"/>
-<pinref part="R13" gate="G$1" pin="1"/>
-</segment>
-</net>
-<net name="N$16" class="0">
-<segment>
-<pinref part="J3" gate="G$1" pin="D-"/>
-<wire x1="25.4" y1="55.88" x2="33.02" y2="55.88" width="0.1524" layer="91"/>
-<pinref part="R14" gate="G$1" pin="1"/>
-</segment>
-</net>
-<net name="USB_D+" class="0">
-<segment>
-<pinref part="R13" gate="G$1" pin="2"/>
-<wire x1="43.18" y1="58.42" x2="48.26" y2="58.42" width="0.1524" layer="91"/>
-<label x="45.72" y="58.42" size="1.778" layer="95"/>
-</segment>
-</net>
-<net name="USB_D-" class="0">
-<segment>
-<pinref part="R14" gate="G$1" pin="2"/>
-<wire x1="43.18" y1="55.88" x2="48.26" y2="55.88" width="0.1524" layer="91"/>
-<label x="45.72" y="55.88" size="1.778" layer="95"/>
-</segment>
-</net>
 </nets>
 </sheet>
 <sheet>
@@ -15830,7 +15823,6 @@ Get info from Ying!</text>
 <instance part="GND37" gate="1" x="170.18" y="35.56"/>
 <instance part="R11" gate="G$1" x="172.72" y="81.28" rot="R90"/>
 <instance part="R12" gate="G$1" x="162.56" y="66.04" rot="R90"/>
-<instance part="C18" gate="G$1" x="50.8" y="81.28"/>
 </instances>
 <busses>
 </busses>
@@ -15927,8 +15919,6 @@ Get info from Ying!</text>
 <junction x="58.42" y="71.12"/>
 <pinref part="U$7" gate="G$1" pin="GND@7"/>
 <junction x="58.42" y="68.58"/>
-<pinref part="C18" gate="G$1" pin="2"/>
-<wire x1="50.8" y1="76.2" x2="58.42" y2="76.2" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="U$7" gate="G$1" pin="COM"/>
@@ -15967,8 +15957,6 @@ Get info from Ying!</text>
 <pinref part="U$7" gate="G$1" pin="VCC"/>
 <wire x1="58.42" y1="86.36" x2="50.8" y2="86.36" width="0.1524" layer="91"/>
 <label x="50.8" y="86.36" size="1.778" layer="95"/>
-<pinref part="C18" gate="G$1" pin="1"/>
-<wire x1="50.8" y1="83.82" x2="50.8" y2="86.36" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="R9" gate="G$1" pin="2"/>
