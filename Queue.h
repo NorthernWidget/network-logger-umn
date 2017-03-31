@@ -19,7 +19,7 @@
 
 #ifndef QUEUE_H
 #define QUEUE_H
-#define MAXQUEUESIZE 20
+#define MAXQUEUESIZE 100
 #include <cstddef>
 
 template <class T>
@@ -28,7 +28,7 @@ public:
     Queue();
     bool isEmpty();
     bool enqueue(T data);
-    bool dequeue(T* data);
+    T dequeue();
 
 private:
     struct Node {

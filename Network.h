@@ -51,23 +51,21 @@ const uint8_t radioChipSelectPin = 10 //TODO:this is just a random number, chang
         		  NOMESSAGE, 	//No message received to read in
         		  NOACK, 		//An ACK was requested and not received
         		  IGNORED, 		//A message was received that we don't need to do anything for
-        		  INQUEUED, 	//Info added to a queue of received info to be handled later
-        		  OUTQUEUED, 	//Info added to a queue to be retransmited later
-        		  DROPPED }; 	//Queue was full and the info was lost
+        		  DROPPED }; 	//Dropped coord accses
 //Opcodes
 #define DTRANSMISSION 0x01 //dataOwner, data0, data1, ... , dataN use dSize to determin N
 #define DROPPEDCOORD 0x02 //no data
 #define ASKFORCOORD 0x03 //no data
 #define IHAVECOORD 0x04 //no data
 #define IAMCOORD 0x05 //no data
-#define UAREPATH 0x06 //no data
 
 /*Defining the packet*/
 #define MAXDATASIZE 60
 #define BROADCASTADDRESS 255
 #define DEFAULTWAITTIME 10000 //10 seconds TBD
-#define MAXMISSCOUNT 5 //TBD
-#define MAXATTEMPTS 5 //TBD
+#define LFCLISTENTIMEOUT 5 //TBD
+#define DROPPEDPACKETTIMEOUT 5 //TBD
+#define MINRSSI 0 //TBD, maybe leave 0
 
 //These functions are just placeholders currently, as this code is currently
 //in development.
@@ -106,6 +104,9 @@ private:
     //inform network that we have coord connection
     void foundCoord();
 
+    //inform network that we dropped coord connection and update associated variables
+    void droppedCoord();
+
     //decide what to do with a received packet
     retVal receivedPacket(Packet* p);
 
@@ -117,12 +118,10 @@ private:
     //bool 		encrypt = false;   //TODO:this will be implemented last
     //char 		*encryptKey;       //TODO:this will be implemented last
     uint8_t networkID = 0;
-    uint8_t leaves[255];
-    uint8_t leafindex = 0;
     uint8_t nextHop;
     uint16_t currentRSSI = 0;
-    bool haveCoord;
-    bool amCoord;
+    bool haveCoord = false;
+    bool amCoord = false;
     bool reconnected = false;
     Queue<float> dataQueue;
 }

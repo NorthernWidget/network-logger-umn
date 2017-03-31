@@ -19,11 +19,10 @@
 #include "Queue.h"
 
 template <class T>
-Queue<T>::Queue()
-    : frontPtr(NULL)
-    , backPtr(NULL)
-    , count(0)
-{
+Queue<T>::Queue(){
+    frontPtr = NULL;
+    backPtr = NULL;
+    count = 0;
 }
 
 template <class T>
@@ -53,12 +52,13 @@ bool Queue<T>::enqueue(T data)
 }
 
 template <class T>
-T Queue<T>::dequeue(T* data)
+T Queue<T>::dequeue()
 {
     if (isEmpty()) {
-        return false;
+        return 0;
     }
     else {
+        T data;
         Node* temp = frontPtr;
         if (frontPtr == backPtr) {
             frontPtr = NULL;
@@ -67,9 +67,9 @@ T Queue<T>::dequeue(T* data)
         else {
             frontPtr = frontPtr->next;
         }
-        data = &(temp->date);
+        data = temp->date;
         delete temp;
         count--;
-        return true;
+        return data;
     }
 }
