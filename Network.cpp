@@ -133,6 +133,7 @@ void Network::lookForCoord()
     Packet* p = new Packet();
     createPacket(ASKFORCOORD, this.myID, BROADCASTADDRESS, 0, NULL, p);
     sendPacket(p);
+    delete p;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -144,6 +145,7 @@ void Network::foundCoord()
     Packet* p = new Packet();
     createPacket(IHAVECOORD, this.myID, BROADCASTADDRESS, 0, NULL, p);
     sendPacket(p);
+    delete p;
 }
 
 void Network::runNetwork()
