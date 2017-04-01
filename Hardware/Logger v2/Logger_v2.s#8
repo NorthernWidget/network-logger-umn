@@ -14078,8 +14078,6 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <part name="X1" library="adafruit" deviceset="SMACONNECTOR" device="_EDGE"/>
 <part name="R16" library="rcl" deviceset="R-EU_" device="R0603"/>
 <part name="R17" library="rcl" deviceset="R-EU_" device="R0603"/>
-<part name="Q4" library="SparkFun-DiscreteSemi" deviceset="MOSFET_PCH" device="-IRLML2244" value="4.3A/20V/54mΩ"/>
-<part name="R19" library="rcl" deviceset="R-EU_" device="R0603" value="10k"/>
 <part name="Q5" library="SparkFun-DiscreteSemi" deviceset="MOSFET_PCH" device="-IRLML2244" value="4.3A/20V/54mΩ"/>
 <part name="R20" library="rcl" deviceset="R-EU_" device="R0603" value="10k"/>
 <part name="Q6" library="SparkFun-DiscreteSemi" deviceset="MOSFET_PCH" device="-IRLML2244" value="4.3A/20V/54mΩ"/>
@@ -14153,7 +14151,6 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <part name="SUPPLY7" library="SparkFun-PowerSymbols" deviceset="VCC" device=""/>
 <part name="SUPPLY8" library="SparkFun-PowerSymbols" deviceset="VCC" device=""/>
 <part name="SUPPLY10" library="SparkFun-PowerSymbols" deviceset="VCC" device=""/>
-<part name="SUPPLY12" library="SparkFun-PowerSymbols" deviceset="VCC" device=""/>
 <part name="SUPPLY13" library="SparkFun-PowerSymbols" deviceset="VCC" device=""/>
 <part name="GND23" library="supply1" deviceset="GND" device=""/>
 <part name="SUPPLY11" library="SparkFun-PowerSymbols" deviceset="VCC" device=""/>
@@ -14328,6 +14325,19 @@ Connect SD_CD to mux input</text>
 <pinref part="R7" gate="G$1" pin="2"/>
 <pinref part="SUPPLY2" gate="G$1" pin="VCC"/>
 <wire x1="45.72" y1="160.02" x2="45.72" y2="157.48" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U1" gate="G$1" pin="VDDIO@36"/>
+<pinref part="U1" gate="G$1" pin="VDDIO@17"/>
+<wire x1="116.84" y1="142.24" x2="116.84" y2="144.78" width="0.1524" layer="91"/>
+<wire x1="116.84" y1="144.78" x2="119.38" y2="144.78" width="0.1524" layer="91"/>
+<pinref part="SUPPLY7" gate="G$1" pin="VCC"/>
+<wire x1="119.38" y1="144.78" x2="119.38" y2="147.32" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="R10" gate="G$1" pin="2"/>
+<pinref part="SUPPLY15" gate="G$1" pin="VCC"/>
+<wire x1="137.16" y1="152.4" x2="137.16" y2="149.86" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="MOSI" class="0">
@@ -14562,14 +14572,15 @@ Connect SD_CD to mux input</text>
 </net>
 <net name="SD_CS" class="0">
 <segment>
-<pinref part="U1" gate="G$1" pin="PA14(XIN/SER2:2+)"/>
-<wire x1="116.84" y1="121.92" x2="121.92" y2="121.92" width="0.1524" layer="91"/>
-<label x="119.38" y="121.92" size="1.778" layer="95"/>
-</segment>
-<segment>
 <pinref part="U$2" gate="G$1" pin="CS"/>
 <wire x1="40.64" y1="185.42" x2="40.64" y2="180.34" width="0.1524" layer="91"/>
 <label x="40.64" y="182.88" size="1.778" layer="95" rot="R270"/>
+</segment>
+<segment>
+<pinref part="U1" gate="G$1" pin="PA08(I2C/AIN16/SER0:0+)"/>
+<wire x1="116.84" y1="137.16" x2="116.84" y2="139.7" width="0.1524" layer="91"/>
+<wire x1="116.84" y1="139.7" x2="121.92" y2="139.7" width="0.1524" layer="91"/>
+<label x="119.38" y="139.7" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SPI_EXT_CS" class="0">
@@ -14638,11 +14649,9 @@ Connect SD_CD to mux input</text>
 </net>
 <net name="RADIO_CS" class="0">
 <segment>
-<pinref part="U1" gate="G$1" pin="PA08(I2C/AIN16/SER0:0+)"/>
-<wire x1="116.84" y1="137.16" x2="118.11" y2="137.16" width="0.1524" layer="91"/>
-<wire x1="118.11" y1="137.16" x2="118.11" y2="141.732" width="0.1524" layer="91"/>
-<wire x1="118.11" y1="141.732" x2="124.714" y2="141.732" width="0.1524" layer="91"/>
-<label x="119.38" y="142.24" size="1.778" layer="95"/>
+<pinref part="U1" gate="G$1" pin="PA13(I2C/SER2:1+)"/>
+<wire x1="116.84" y1="124.46" x2="121.92" y2="124.46" width="0.1524" layer="91"/>
+<label x="119.38" y="124.46" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="RTC_INT" class="0">
@@ -14701,21 +14710,6 @@ Connect SD_CD to mux input</text>
 <pinref part="U$2" gate="G$1" pin="CARD_DETECT"/>
 <wire x1="22.86" y1="185.42" x2="22.86" y2="172.72" width="0.1524" layer="91"/>
 <label x="22.86" y="172.72" size="1.778" layer="95" rot="R90"/>
-</segment>
-</net>
-<net name="VCC" class="0">
-<segment>
-<pinref part="U1" gate="G$1" pin="VDDIO@36"/>
-<pinref part="U1" gate="G$1" pin="VDDIO@17"/>
-<wire x1="116.84" y1="142.24" x2="116.84" y2="144.78" width="0.1524" layer="91"/>
-<wire x1="116.84" y1="144.78" x2="119.38" y2="144.78" width="0.1524" layer="91"/>
-<pinref part="SUPPLY7" gate="G$1" pin="VCC"/>
-<wire x1="119.38" y1="144.78" x2="119.38" y2="147.32" width="0.1524" layer="91"/>
-</segment>
-<segment>
-<pinref part="R10" gate="G$1" pin="2"/>
-<pinref part="SUPPLY15" gate="G$1" pin="VCC"/>
-<wire x1="137.16" y1="152.4" x2="137.16" y2="149.86" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
@@ -15386,8 +15380,6 @@ Use I2C or UART?</text>
 <wire x1="20.32" y1="43.18" x2="5.08" y2="43.18" width="0.1524" layer="91"/>
 <label x="5.08" y="43.18" size="1.778" layer="95"/>
 </segment>
-</net>
-<net name="GPS_VCC" class="0">
 <segment>
 <pinref part="U$6" gate="G$1" pin="VCC_IO"/>
 <wire x1="88.9" y1="33.02" x2="86.36" y2="33.02" width="0.1524" layer="91"/>
@@ -15412,11 +15404,6 @@ Add control signals!</text>
 both external lines (0.5A rated)</text>
 </plain>
 <instances>
-<instance part="Q4" gate="G$1" x="76.2" y="50.8" smashed="yes" rot="R270">
-<attribute name="NAME" x="74.676" y="44.45" size="1.778" layer="95" font="vector"/>
-<attribute name="VALUE" x="66.04" y="40.64" size="1.778" layer="96" font="vector"/>
-</instance>
-<instance part="R19" gate="G$1" x="68.58" y="58.42" rot="R90"/>
 <instance part="Q5" gate="G$1" x="25.4" y="20.32" smashed="yes" rot="R270">
 <attribute name="NAME" x="23.876" y="13.97" size="1.778" layer="95" font="vector"/>
 <attribute name="VALUE" x="15.24" y="10.16" size="1.778" layer="96" font="vector"/>
@@ -15433,7 +15420,6 @@ both external lines (0.5A rated)</text>
 </instance>
 <instance part="R22" gate="G$1" x="114.3" y="58.42" rot="R90"/>
 <instance part="SUPPLY10" gate="G$1" x="10.16" y="20.32"/>
-<instance part="SUPPLY12" gate="G$1" x="60.96" y="50.8"/>
 <instance part="SUPPLY13" gate="G$1" x="106.68" y="50.8"/>
 <instance part="F1" gate="G$1" x="38.1" y="17.78"/>
 <instance part="F2" gate="G$1" x="91.44" y="17.78"/>
@@ -15441,16 +15427,6 @@ both external lines (0.5A rated)</text>
 <busses>
 </busses>
 <nets>
-<net name="GPS_VCC_CTRL" class="0">
-<segment>
-<pinref part="R19" gate="G$1" pin="2"/>
-<wire x1="68.58" y1="63.5" x2="68.58" y2="66.04" width="0.1524" layer="91"/>
-<pinref part="Q4" gate="G$1" pin="G"/>
-<wire x1="68.58" y1="66.04" x2="73.66" y2="66.04" width="0.1524" layer="91"/>
-<wire x1="73.66" y1="66.04" x2="73.66" y2="55.88" width="0.1524" layer="91"/>
-<label x="68.58" y="66.04" size="1.778" layer="95"/>
-</segment>
-</net>
 <net name="3.3V_EXT_CTRL" class="0">
 <segment>
 <pinref part="R20" gate="G$1" pin="2"/>
@@ -15481,13 +15457,6 @@ both external lines (0.5A rated)</text>
 <label x="114.3" y="66.04" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="GPS_VCC" class="0">
-<segment>
-<pinref part="Q4" gate="G$1" pin="D"/>
-<wire x1="81.28" y1="48.26" x2="88.9" y2="48.26" width="0.1524" layer="91"/>
-<label x="83.82" y="48.26" size="1.778" layer="95"/>
-</segment>
-</net>
 <net name="SD_VCC" class="0">
 <segment>
 <pinref part="Q7" gate="G$1" pin="D"/>
@@ -15503,35 +15472,6 @@ both external lines (0.5A rated)</text>
 <pinref part="R21" gate="G$1" pin="1"/>
 <wire x1="68.58" y1="17.78" x2="60.96" y2="17.78" width="0.1524" layer="91"/>
 <wire x1="68.58" y1="22.86" x2="68.58" y2="17.78" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="VCC" class="0">
-<segment>
-<pinref part="Q5" gate="G$1" pin="S"/>
-<wire x1="20.32" y1="17.78" x2="17.78" y2="17.78" width="0.1524" layer="91"/>
-<pinref part="R20" gate="G$1" pin="1"/>
-<wire x1="17.78" y1="22.86" x2="17.78" y2="17.78" width="0.1524" layer="91"/>
-<pinref part="SUPPLY10" gate="G$1" pin="VCC"/>
-<wire x1="10.16" y1="20.32" x2="10.16" y2="17.78" width="0.1524" layer="91"/>
-<wire x1="10.16" y1="17.78" x2="17.78" y2="17.78" width="0.1524" layer="91"/>
-</segment>
-<segment>
-<pinref part="Q4" gate="G$1" pin="S"/>
-<wire x1="71.12" y1="48.26" x2="68.58" y2="48.26" width="0.1524" layer="91"/>
-<pinref part="R19" gate="G$1" pin="1"/>
-<wire x1="68.58" y1="48.26" x2="60.96" y2="48.26" width="0.1524" layer="91"/>
-<wire x1="68.58" y1="53.34" x2="68.58" y2="48.26" width="0.1524" layer="91"/>
-<pinref part="SUPPLY12" gate="G$1" pin="VCC"/>
-<wire x1="60.96" y1="50.8" x2="60.96" y2="48.26" width="0.1524" layer="91"/>
-</segment>
-<segment>
-<pinref part="Q7" gate="G$1" pin="S"/>
-<wire x1="116.84" y1="48.26" x2="114.3" y2="48.26" width="0.1524" layer="91"/>
-<pinref part="R22" gate="G$1" pin="1"/>
-<wire x1="114.3" y1="48.26" x2="106.68" y2="48.26" width="0.1524" layer="91"/>
-<wire x1="114.3" y1="53.34" x2="114.3" y2="48.26" width="0.1524" layer="91"/>
-<pinref part="SUPPLY13" gate="G$1" pin="VCC"/>
-<wire x1="106.68" y1="50.8" x2="106.68" y2="48.26" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$14" class="0">
@@ -15560,6 +15500,26 @@ both external lines (0.5A rated)</text>
 <pinref part="F2" gate="G$1" pin="2"/>
 <wire x1="99.06" y1="17.78" x2="104.14" y2="17.78" width="0.1524" layer="91"/>
 <label x="101.6" y="17.78" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="3.3V" class="0">
+<segment>
+<pinref part="Q5" gate="G$1" pin="S"/>
+<wire x1="20.32" y1="17.78" x2="17.78" y2="17.78" width="0.1524" layer="91"/>
+<pinref part="R20" gate="G$1" pin="1"/>
+<wire x1="17.78" y1="22.86" x2="17.78" y2="17.78" width="0.1524" layer="91"/>
+<pinref part="SUPPLY10" gate="G$1" pin="VCC"/>
+<wire x1="10.16" y1="20.32" x2="10.16" y2="17.78" width="0.1524" layer="91"/>
+<wire x1="10.16" y1="17.78" x2="17.78" y2="17.78" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="Q7" gate="G$1" pin="S"/>
+<wire x1="116.84" y1="48.26" x2="114.3" y2="48.26" width="0.1524" layer="91"/>
+<pinref part="R22" gate="G$1" pin="1"/>
+<wire x1="114.3" y1="48.26" x2="106.68" y2="48.26" width="0.1524" layer="91"/>
+<wire x1="114.3" y1="53.34" x2="114.3" y2="48.26" width="0.1524" layer="91"/>
+<pinref part="SUPPLY13" gate="G$1" pin="VCC"/>
+<wire x1="106.68" y1="50.8" x2="106.68" y2="48.26" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
