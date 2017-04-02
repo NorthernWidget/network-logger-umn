@@ -16,28 +16,27 @@
  * =====================================================================================
  */
 
-#include "Queue.h"
+#include <Queue.h>
 
-template <class T>
-Queue<T>::Queue(){
-    frontPtr = NULL;
-    backPtr = NULL;
+Queue::Queue(){
+    frontPtr = nullptr;
+    backPtr = nullptr;
     count = 0;
 }
 
-template <class T>
-bool Queue<T>::isEmpty()
+
+bool Queue::isEmpty()
 {
     return (count == 0);
 }
 
-template <class T>
-bool Queue<T>::enqueue(T data)
+
+bool Queue::enqueue(long data)
 {
     if (count < MAXQUEUESIZE) {
         Node* newOne = new Node;
         newOne->date = data;
-        newOne->next = NULL;
+        newOne->next = nullptr;
         if (isEmpty()) {
             frontPtr = newOne;
         }
@@ -51,18 +50,18 @@ bool Queue<T>::enqueue(T data)
     return false;
 }
 
-template <class T>
-T Queue<T>::dequeue()
+
+long Queue::dequeue()
 {
     if (isEmpty()) {
         return 0;
     }
     else {
-        T data;
+        long data;
         Node* temp = frontPtr;
         if (frontPtr == backPtr) {
-            frontPtr = NULL;
-            backPtr = NULL;
+            frontPtr = nullptr;
+            backPtr = nullptr;
         }
         else {
             frontPtr = frontPtr->next;

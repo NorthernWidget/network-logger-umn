@@ -42,16 +42,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <Packet.h>
 
 //Default Constructor
-void Network::Network() {}
+Network::Network() {}
 
-retVal Network::initNetwork(uint8_t networkID)
+void Network::initNetwork(uint8_t networkID)
 {
     //TODO: set myID from EEPROM
-    //this.myID = EEPROM.read(idaddress);
-    this.networkID = networkID;
+    //this->myID = EEPROM.read(idaddress);
+    this->networkID = networkID;
     digitalWrite(radioChipSelectPin, LOW);
     //TODO: set other chip selects high
-    radio.initialize(RF69_915MHZ, this.myID, this.networkID);
+    radio.initialize(RF69_915MHZ, this->myID, this->networkID);
     radio.writeReg(0x03, 0x0A);
     radio.writeReg(0x04, 0x00);
     radio.setHighPower();
@@ -67,16 +67,16 @@ retVal Network::readPacket(Packet* p)
 {
     digitalWrite(radioChipSelectPin, LOW);
     //TODO: set other chip selects high
-    if (this.radio.receiveDone()) {
-        if (this.radio.ACKRequested())
-            this.radio.sendACK();
-        p->setdSize(this.radio.PAYLOADLEN - 1);
-        p->setsAddr(this.radio.SENDERID);
-        p->setdAddr(this.radio.TARGETID);
-        p->setopCode(this.radio.DATA[0]);
-        p->setRSSI(this.radio.readRSSI());
+    if (this->radio.receiveDone()) {
+        if (this->radio.ACKRequested())
+            this->radio.sendACK();
+        p->setdSize(this->radio.PAYLOADLEN - 1);
+        p->setsAddr(this->radio.SENDERID);
+        p->setdAddr(this->radio.TARGETID);
+        p->setopCode(this->radio.DATA[0]);
+        p->setRSSI(this->radio.readRSSI());
         for (int i = 0; i < p->getdSize(); i++) {
-            p->setdata(this.radio.DATA[i + 1], i);
+            p->setdata(this->radio.DATA[i + 1], i);
         }
         for (int i = p->getdSize(); i < MAXDATASIZE; i++) {
             p->setdata(0, i);
@@ -96,10 +96,10 @@ retVal Network::sendPacket(Packet* p)
     uint8_t data[p->getdSize() + 1];
     data[0] = p->getopCode();
     for (int i = 0; i < p->getdSize(); i++) {
-        data[i + 1] = p->getdata(i);
+        data[i + 1] = p->getData(i);
     }
-    if (this.useAck && p->getdAddr() != BROADCASTADDRESS) {
-        if (this.radio.sendWithRetry(p->getdAddr(), data, p->getdSize() + 1)) {
+    if (this->useAck && p->getdAddr() != BROADCASTADDRESS) {
+        if (this->radio.sendWithRetry(p->getdAddr(), data, p->getdSize() + 1)) {
             return SUCCESS;
         }
         else {
@@ -107,7 +107,7 @@ retVal Network::sendPacket(Packet* p)
         }
     }
     else {
-        this.radio.send(p->getdAddr(), data, p->getdSize() + 1);
+        this->radio.send(p->getdAddr(), data, p->getdSize() + 1);
         return SUCCESS;
     }
 }
@@ -133,8 +133,8 @@ void Network::createPacket(uint8_t opCode, uint8_t sAddr, uint8_t dAddr, uint8_t
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void Network::lookForCoord()
 {
-    Packet* p = new Packet();
-    createPacket(ASKFORCOORD, this.myID, BROADCASTADDRESS, 0, NULL, p);
+    Packet *p = new Packet();
+    createPacket(ASKFORCOORD, this->myID, BROADCASTADDRESS, 0, NULL, p);
     sendPacket(p);
     delete p;
 }
@@ -145,8 +145,8 @@ void Network::lookForCoord()
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void Network::foundCoord()
 {
-    Packet* p = new Packet();
-    createPacket(IHAVECOORD, this.myID, BROADCASTADDRESS, 0, NULL, p);
+    Packet *p = new Packet();
+    createPacket(IHAVECOORD, this->myID, BROADCASTADDRESS, 0, NULL, p);
     sendPacket(p);
     delete p;
 }
@@ -157,20 +157,20 @@ void Network::foundCoord()
  * variables for the loss of connection
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void Network::droppedCoord(){
-    this.haveCoord = false;
-    this.currentRSSI = 0;
-    Packet* p = new Packet();
-    createPacket(DROPPEDCOORD, this.myID, BROADCASTADDRESS, 0, NULL, p);
+    this->haveCoord = false;
+    this->currentRSSI = 0;
+    Packet *p = new Packet();
+    createPacket(DROPPEDCOORD, this->myID, BROADCASTADDRESS, 0, NULL, p);
     sendPacket(p);
     delete p;
 }
 
-void Network::runNetwork()
+long Network::runNetwork()
 {
     //wake up radio
     short noPacketReceived=0;
     Packet *p = new Packet();
-    if(this.amCoord){
+    if(this->amCoord){
 		    //listen
         //TODO figure out these timeouts, there are infinite ways to do them,
         //but I think this way will work: have a counter on the number of times
@@ -178,7 +178,7 @@ void Network::runNetwork()
         //stop listening we also tune the sleeps accordingly.
         while(noPacketReceived < COORDLISTENTIMEOUT){
             if(readPacket(p) != NOMESSAGE){
-                receivedPacket(p);
+                return receivedPacket(p);
             }
             else{
                 noPacketReceived++;
@@ -187,11 +187,11 @@ void Network::runNetwork()
             //on whether or not we received a packet.
         }
 	}
-	else if(this.haveCoord){
+	else if(this->haveCoord){
 		    //send yourdata
         uint8_t data[MAXDATASIZE];
         uint8_t index;
-        float d;
+        long d;
         while(!dataQueue.isEmpty()){
             for(index = 1 ; index<MAXDATASIZE-3 && !dataQueue.isEmpty();){
                 d = dataQueue.dequeue();
@@ -201,7 +201,7 @@ void Network::runNetwork()
                 data[index++] = d;
             }
             uint8_t failedSend = 0;
-            createPacket(DTRANSMISSION, this.myID, this.nextHop, size, data, p);
+            createPacket(DTRANSMISSION, this->myID, this->nextHop, index, data, p);
             while((sendPacket(p) == NOACK) && (failedSend < DROPPEDPACKETTIMEOUT)){
               failedSend++;
               //TODO sleep for some amount of time. (Sould we sleep or immedeately try to resend?)
@@ -211,7 +211,7 @@ void Network::runNetwork()
               droppedCoord();
               delete p;
               //radio.sleep();
-              return;
+              return 0;
             }
         }
 		    //listen forward
@@ -252,27 +252,28 @@ void Network::runNetwork()
         //after we have listened long enough and we have
         //reconnected we can say we have coord again and
         //move on to the next round of runNetwork()
-        if(this.reconnected){
-          this.reconnected = false;
-          this.haveCoord = true;
+        if(this->reconnected){
+          this->reconnected = false;
+          this->haveCoord = true;
           foundCoord();
         }
 	}
   delete p;
 }
 
-retVal receivedPacket(Packet* p)
+long Network::receivedPacket(Packet* p)
 {
     uint8_t opCode = p->getopCode();
-    if(this.amCoord){
+	uint8_t failedSend;
+    if(this->amCoord){
       switch(opCode){
         case DTRANSMISSION:
           //TODO: upload to server;
-          return SUCCESS;
+          return p->getopCode();
         case ASKFORCOORD:
           //tell the asking node that you are coord
-          uint8_t failedSend = 0;
-          createPacket(IAMCOORD, this.myID, p->getsAddr(), 0, NULL, p);
+          failedSend = 0;
+          createPacket(IAMCOORD, this->myID, p->getsAddr(), 0, NULL, p);
           while((sendPacket(p) == NOACK) && (failedSend < DROPPEDPACKETTIMEOUT)){
             failedSend++;
             //TODO sleep for some amount of time. (Sould we sleep or immedeately try to resend?)
@@ -285,12 +286,12 @@ retVal receivedPacket(Packet* p)
           return IGNORED;
       }
     }
-    else if(this.haveCoord){
+    else if(this->haveCoord){
       switch(opCode){
         case DTRANSMISSION:
           //send data up to the next hop
-          uint8_t failedSend = 0;
-          p->setdAddr(this.nextHop);
+          failedSend = 0;
+          p->setdAddr(this->nextHop);
           while((sendPacket(p) == NOACK) && (failedSend < DROPPEDPACKETTIMEOUT)){
             failedSend++;
             //TODO sleep for some amount of time. (Sould we sleep or immedeately try to resend?)
@@ -301,14 +302,14 @@ retVal receivedPacket(Packet* p)
           return SUCCESS;
         case DROPPEDCOORD:
           //if your next hop dropped coord, then so did you
-          if(p->getsAddr() == this.nextHop){
+          if(p->getsAddr() == this->nextHop){
             return DROPPED;
           }
           return IGNORED;
         case ASKFORCOORD:
           //tell the asking node that you have coord access
-          uint8_t failedSend = 0;
-          createPacket(IHAVECOORD, this.myID, p->getsAddr(), 0, NULL, p);
+          failedSend = 0;
+          createPacket(IHAVECOORD, this->myID, p->getsAddr(), 0, NULL, p);
           while((sendPacket(p) == NOACK) && (failedSend < DROPPEDPACKETTIMEOUT)){
             failedSend++;
             //TODO sleep for some amount of time. (Sould we sleep or immedeately try to resend?)
@@ -326,16 +327,16 @@ retVal receivedPacket(Packet* p)
         case IAMCOORD: //TODO: may want to differentiate these later by prioritizing connecting directly to the coord
         case IHAVECOORD:
           if(p->getRSSI() > MINRSSI && p->getRSSI() > currentRSSI){
-            this.reconnected = true;
-            this.currentRSSI = p->getRSSI();
-            this.nextHop = p->getsAddr();
+            this->reconnected = true;
+            this->currentRSSI = p->getRSSI();
+            this->nextHop = p->getsAddr();
             return SUCCESS;
           }
           return IGNORED;
         case DTRANSMISSION:
           //let the node that just sent us data know that we don't have coord access anymore
-          uint8_t failedSend = 0;
-          createPacket(DROPPEDCOORD, this.myID, p->getsAddr(), 0, NULL, p);
+          failedSend = 0;
+          createPacket(DROPPEDCOORD, this->myID, p->getsAddr(), 0, NULL, p);
           while((sendPacket(p) == NOACK) && (failedSend < DROPPEDPACKETTIMEOUT)){
             failedSend++;
             //TODO sleep for some amount of time. (Sould we sleep or immedeately try to resend?)

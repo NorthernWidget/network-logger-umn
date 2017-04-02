@@ -39,11 +39,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <RFM69.h>
 #include <SPI.h>
+#include <Packet.h>
+#include <Queue.h>
+
 #ifndef Network_h
 #define Network_h
 //radio globals
 //#define FREQUENCY     RF69_915MHZ
-const uint8_t radioChipSelectPin = 10 //TODO:this is just a random number, change it when the board layout is done
+const uint8_t radioChipSelectPin = 10; //TODO:this is just a random number, change it when the board layout is done
     //RetVal
     enum retVal { SUCCESS, 		//Generic Success
         		  FAIL, 		//Generic Failure
@@ -82,10 +85,20 @@ public:
     void initNetwork(uint8_t networkID);
 
     //handles the every wake network events
-    void runNetwork();
+    long runNetwork();
 
     //The data to the network class for forwarding to the coordinator
-    bool sendOverNetwork(float data){ return dataQueue.enqueue(data) };
+    bool sendOverNetwork(long data){ return dataQueue.enqueue(data); };
+	
+	//Set Coord (For testing purposes)
+	void setCoord() {this->amCoord = true; };
+	
+	//Set nextHop (For testing)
+	void setNextHop(int hop) { this->nextHop = hop; };
+	
+	//Set myID (For testing)
+	void setmyID(int id) { this->myID = id; };
+
 
 private:
     //fill a packet class object with data that was received
@@ -98,7 +111,7 @@ private:
     void createPacket(uint8_t opCode, uint8_t sAddr, uint8_t dAddr, uint8_t dSize, uint8_t data[], Packet* p);
 
     //returns true if the chip running this fnc is coord
-    bool checkIfCoord(){ return this.amCoord };
+    bool checkIfCoord(){ return this->amCoord; };
 
     //finds a path to coord
     void lookForCoord();
@@ -110,7 +123,7 @@ private:
     void droppedCoord();
 
     //decide what to do with a received packet
-    retVal receivedPacket(Packet* p);
+    long receivedPacket(Packet* p);
 
     //void setPath(uint8_t p[])
 
@@ -125,7 +138,7 @@ private:
     bool haveCoord = false;
     bool amCoord = false;
     bool reconnected = false;
-    Queue<float> dataQueue;
-}
+    Queue dataQueue;
+};
 
 #endif

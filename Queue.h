@@ -20,19 +20,18 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 #define MAXQUEUESIZE 100
-#include <cstddef>
+//#include <cstddef>
 
-template <class T>
-class Queue {
+class Queue{
 public:
     Queue();
     bool isEmpty();
-    bool enqueue(T data);
-    T dequeue();
+    bool enqueue(long data);
+    long dequeue();
 
 private:
     struct Node {
-        T date;
+        long date;
         Node* next;
     };
 
