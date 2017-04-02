@@ -63,7 +63,10 @@ const uint8_t radioChipSelectPin = 10 //TODO:this is just a random number, chang
 #define MAXDATASIZE 60
 #define BROADCASTADDRESS 255
 #define DEFAULTWAITTIME 10000 //10 seconds TBD
+#define COORDLISTENTIMEOUT 65000
+#define ROUTERLISTENTIMEOUT 255
 #define LFCLISTENTIMEOUT 5 //TBD
+
 #define DROPPEDPACKETTIMEOUT 5 //TBD
 #define MINRSSI 0 //TBD, maybe leave 0
 

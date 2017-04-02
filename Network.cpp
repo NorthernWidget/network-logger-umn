@@ -166,7 +166,7 @@ void Network::droppedCoord(){
 void Network::runNetwork()
 {
     //wake up radio
-    uint8_t noPacketReceived=0;
+    short noPacketReceived=0;
     Packet *p = new Packet();
     if(this.amCoord){
 		    //listen
