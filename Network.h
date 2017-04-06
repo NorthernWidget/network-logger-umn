@@ -65,9 +65,9 @@ const uint8_t radioChipSelectPin = 10; //TODO:this is just a random number, chan
 #define MAXDATASIZE 60
 #define BROADCASTADDRESS 255
 #define DEFAULTWAITTIME 10000 //10 seconds TBD
-#define COORDLISTENTIMEOUT 65000
+#define COORDLISTENTIMEOUT 650
 #define ROUTERLISTENTIMEOUT 255
-#define LFCLISTENTIMEOUT 5 //TBD
+#define LFCLISTENTIMEOUT 20 //TBD
 
 #define DROPPEDPACKETTIMEOUT 5 //TBD
 #define MINRSSI 0 //TBD, maybe leave 0
@@ -85,7 +85,7 @@ public:
     void initNetwork(uint8_t networkID);
 
     //handles the every wake network events
-    long runNetwork();
+    void runNetwork();
 
     //The data to the network class for forwarding to the coordinator
     bool sendOverNetwork(long data){ return dataQueue.enqueue(data); };
@@ -138,6 +138,7 @@ private:
     bool haveCoord = false;
     bool amCoord = false;
     bool reconnected = false;
+    int noPacketReceived;
     Queue dataQueue;
 };
 

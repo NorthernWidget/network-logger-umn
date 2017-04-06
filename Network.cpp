@@ -68,9 +68,8 @@ retVal Network::readPacket(Packet* p)
     digitalWrite(radioChipSelectPin, LOW);
     //TODO: set other chip selects high
     if (this->radio.receiveDone()) {
-        if (this->radio.ACKRequested())
-            this->radio.sendACK();
-        p->setdSize(this->radio.PAYLOADLEN - 1);
+	delay(15);
+        p->setdSize(this->radio.DATALEN - 1);
         p->setsAddr(this->radio.SENDERID);
         p->setdAddr(this->radio.TARGETID);
         p->setopCode(this->radio.DATA[0]);
@@ -81,6 +80,8 @@ retVal Network::readPacket(Packet* p)
         for (int i = p->getdSize(); i < MAXDATASIZE; i++) {
             p->setdata(0, i);
         }
+	if (this->radio.ACKRequested())
+            this->radio.sendACK();
         return SUCCESS;
     }
     return NOMESSAGE;
@@ -107,6 +108,7 @@ retVal Network::sendPacket(Packet* p)
         }
     }
     else {
+        delay(100);
         this->radio.send(p->getdAddr(), data, p->getdSize() + 1);
         return SUCCESS;
     }
@@ -165,10 +167,10 @@ void Network::droppedCoord(){
     delete p;
 }
 
-long Network::runNetwork()
+void Network::runNetwork()
 {
     //wake up radio
-    short noPacketReceived=0;
+    this->noPacketReceived = 0;
     Packet *p = new Packet();
     if(this->amCoord){
 		    //listen
@@ -178,11 +180,12 @@ long Network::runNetwork()
         //stop listening we also tune the sleeps accordingly.
         while(noPacketReceived < COORDLISTENTIMEOUT){
             if(readPacket(p) != NOMESSAGE){
-                return receivedPacket(p);
+                receivedPacket(p);
             }
             else{
-                noPacketReceived++;
+                ++noPacketReceived;
             }
+            delay(10);
             //TODO sleep for some amount of time. Can change the sleep time depending
             //on whether or not we received a packet.
         }
@@ -193,6 +196,7 @@ long Network::runNetwork()
         uint8_t index;
         long d;
         while(!dataQueue.isEmpty()){
+            data[0] = this->myID;
             for(index = 1 ; index<MAXDATASIZE-3 && !dataQueue.isEmpty();){
                 d = dataQueue.dequeue();
                 data[index++] = d >> 24;
@@ -211,7 +215,7 @@ long Network::runNetwork()
               droppedCoord();
               delete p;
               //radio.sleep();
-              return 0;
+              return;
             }
         }
 		    //listen forward
@@ -224,7 +228,7 @@ long Network::runNetwork()
                 }
             }
             else{
-                noPacketReceived++;
+                ++noPacketReceived;
             }
             //TODO sleep for some amount of time. Can change the sleep time depending
             //on whether or not we received a packet.
@@ -236,15 +240,18 @@ long Network::runNetwork()
 	else{
 		    //ask for coord
         lookForCoord(); //NOTE: from Jeff, I think we should send this every so many (5 maybe? TDB) noPacketReceived
+        delay(20);
                         //incremnets in case no one was listening
 		    //listen and choose best next hop
-        while(noPacketReceived < LFCLISTENTIMEOUT /* && wait for multiple answers*/){
+        while(noPacketReceived < LFCLISTENTIMEOUT){
             if(readPacket(p) != NOMESSAGE){
+                delay(100);
                 receivedPacket(p);
             }
             else{
-                noPacketReceived++;
+                ++noPacketReceived;
             }
+	    delay(20);
             //TODO sleep for some amount of time. Can change the sleep time depending
             //on whether or not we received a packet.
         }
@@ -264,12 +271,15 @@ long Network::runNetwork()
 long Network::receivedPacket(Packet* p)
 {
     uint8_t opCode = p->getopCode();
-	uint8_t failedSend;
+    uint8_t failedSend;
     if(this->amCoord){
       switch(opCode){
         case DTRANSMISSION:
           //TODO: upload to server;
-          return p->getopCode();
+	  for(int i = 0; i < p->getdSize(); i++){
+          	Serial.println(p->getData(i));
+	  }
+          return SUCCESS;
         case ASKFORCOORD:
           //tell the asking node that you are coord
           failedSend = 0;
@@ -324,7 +334,15 @@ long Network::receivedPacket(Packet* p)
     }
     else{
       switch(opCode){
-        case IAMCOORD: //TODO: may want to differentiate these later by prioritizing connecting directly to the coord
+        case IAMCOORD:
+	 //TODO: may want to differentiate these later by prioritizing connecting directly to the coord
+          if(p->getRSSI() > MINRSSI && p->getRSSI() > currentRSSI){
+            this->reconnected = true;
+            this->currentRSSI = p->getRSSI();
+            this->nextHop = p->getsAddr();
+            return SUCCESS;
+          }
+          return IGNORED;
         case IHAVECOORD:
           if(p->getRSSI() > MINRSSI && p->getRSSI() > currentRSSI){
             this->reconnected = true;
