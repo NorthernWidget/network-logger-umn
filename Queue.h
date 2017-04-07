@@ -19,7 +19,7 @@
 
 #ifndef QUEUE_H
 #define QUEUE_H
-#define MAXQUEUESIZE 100
+#define MAXQUEUESIZE 100 //TBD maybe even remove
 //#include <cstddef>
 
 class Queue{
