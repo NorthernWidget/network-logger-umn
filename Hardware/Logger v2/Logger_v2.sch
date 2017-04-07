@@ -5961,8 +5961,8 @@ for trimmer refence see : &lt;u&gt;www.electrospec-inc.com/cross_references/trim
 </package>
 <package name="R0603">
 <description>&lt;b&gt;RESISTOR&lt;/b&gt;</description>
-<wire x1="-0.432" y1="-0.356" x2="0.432" y2="-0.356" width="0.1524" layer="51"/>
-<wire x1="0.432" y1="0.356" x2="-0.432" y2="0.356" width="0.1524" layer="51"/>
+<wire x1="-0.432" y1="-0.3306" x2="0.432" y2="-0.3306" width="0.2032" layer="51"/>
+<wire x1="0.432" y1="0.3306" x2="-0.432" y2="0.3306" width="0.2032" layer="51"/>
 <wire x1="-1.473" y1="0.983" x2="1.473" y2="0.983" width="0.0508" layer="39"/>
 <wire x1="1.473" y1="0.983" x2="1.473" y2="-0.983" width="0.0508" layer="39"/>
 <wire x1="1.473" y1="-0.983" x2="-1.473" y2="-0.983" width="0.0508" layer="39"/>
@@ -7540,8 +7540,8 @@ Source: http://www.mouser.com/ds/2/392/products_18-2245.pdf</description>
 <wire x1="1.473" y1="0.983" x2="1.473" y2="-0.983" width="0.0508" layer="39"/>
 <wire x1="1.473" y1="-0.983" x2="-1.473" y2="-0.983" width="0.0508" layer="39"/>
 <wire x1="-1.473" y1="-0.983" x2="-1.473" y2="0.983" width="0.0508" layer="39"/>
-<wire x1="-0.356" y1="0.432" x2="0.356" y2="0.432" width="0.1016" layer="51"/>
-<wire x1="-0.356" y1="-0.419" x2="0.356" y2="-0.419" width="0.1016" layer="51"/>
+<wire x1="-0.356" y1="0.3558" x2="0.356" y2="0.3558" width="0.2032" layer="51"/>
+<wire x1="-0.356" y1="-0.3428" x2="0.356" y2="-0.3428" width="0.2032" layer="51"/>
 <smd name="1" x="-0.85" y="0" dx="1.1" dy="1" layer="1"/>
 <smd name="2" x="0.85" y="0" dx="1.1" dy="1" layer="1"/>
 <text x="-0.635" y="0.635" size="1.27" layer="25">&gt;NAME</text>
@@ -7587,8 +7587,8 @@ Source: http://www.mouser.com/ds/2/392/products_18-2245.pdf</description>
 <wire x1="-2.473" y1="1.483" x2="2.473" y2="1.483" width="0.0508" layer="39"/>
 <wire x1="2.473" y1="-1.483" x2="-2.473" y2="-1.483" width="0.0508" layer="39"/>
 <wire x1="-2.473" y1="-1.483" x2="-2.473" y2="1.483" width="0.0508" layer="39"/>
-<wire x1="-0.9652" y1="1.2446" x2="0.9652" y2="1.2446" width="0.1016" layer="51"/>
-<wire x1="-0.9652" y1="-1.2446" x2="0.9652" y2="-1.2446" width="0.1016" layer="51"/>
+<wire x1="-0.9398" y1="1.1938" x2="0.9906" y2="1.1938" width="0.2032" layer="51"/>
+<wire x1="-0.9906" y1="-1.1938" x2="0.9398" y2="-1.1938" width="0.2032" layer="51"/>
 <wire x1="2.473" y1="1.483" x2="2.473" y2="-1.483" width="0.0508" layer="39"/>
 <smd name="1" x="-1.4" y="0" dx="1.6" dy="2.7" layer="1"/>
 <smd name="2" x="1.4" y="0" dx="1.6" dy="2.7" layer="1"/>
@@ -11455,71 +11455,144 @@ We've spent an enormous amount of time creating and checking these footprints an
 &lt;br&gt;
 You are welcome to use this library for commercial purposes. For attribution, we ask that when you begin to sell your device using our footprint, you email us with a link to the product being sold. We want bragging rights that we helped (in a very small part) to create your 8th world wonder. We would like the opportunity to feature your device on our homepage.</description>
 <packages>
-<package name="RFM69CW-XXXS2">
-<description>&lt;h3&gt;Hope RF RFM69CW RF Transciever&lt;/h3&gt;
-&lt;p&gt;&lt;a href="http://www.hoperf.com/upload/rf/RFM69CW-V1.1.pdf"&gt;Datasheet&lt;/a&gt;&lt;/p&gt;</description>
+<package name="RFM69HCW-XXXS2">
+<description>&lt;h3&gt;Hope RF RFM69HCW RF Transciever&lt;/h3&gt;
+&lt;p&gt;&lt;a href="http://www.orcam.eu/res/Datablad/rfm69hcwv11.pdf"&gt;Datasheet&lt;/a&gt;&lt;/p&gt;</description>
+<smd name="4" x="-7.5" y="1" dx="3" dy="1.2" layer="1"/>
+<smd name="3" x="-7.5" y="3" dx="3" dy="1.2" layer="1"/>
+<smd name="2" x="-7.5" y="5" dx="3" dy="1.2" layer="1"/>
+<smd name="1" x="-7.5" y="7" dx="3" dy="1.2" layer="1"/>
+<smd name="5" x="-7.5" y="-1" dx="3" dy="1.2" layer="1"/>
+<smd name="6" x="-7.5" y="-3" dx="3" dy="1.2" layer="1"/>
+<smd name="7" x="-7.5" y="-5" dx="3" dy="1.2" layer="1"/>
+<smd name="8" x="-7.5" y="-7" dx="3" dy="1.2" layer="1"/>
+<smd name="9" x="7.5" y="-7" dx="3" dy="1.2" layer="1"/>
+<smd name="10" x="7.5" y="-5" dx="3" dy="1.2" layer="1"/>
+<smd name="11" x="7.5" y="-3" dx="3" dy="1.2" layer="1"/>
+<smd name="12" x="7.5" y="-1" dx="3" dy="1.2" layer="1"/>
+<smd name="13" x="7.5" y="1" dx="3" dy="1.2" layer="1"/>
+<smd name="14" x="7.5" y="3" dx="3" dy="1.2" layer="1"/>
+<smd name="15" x="7.5" y="5" dx="3" dy="1.2" layer="1"/>
+<smd name="16" x="7.5" y="7" dx="3" dy="1.2" layer="1"/>
+<text x="0" y="8.255" size="0.6096" layer="25" font="vector" ratio="20" align="bottom-center">&gt;NAME</text>
+<text x="0" y="-8.3" size="0.6096" layer="27" font="vector" ratio="20" align="top-center">&gt;VALUE</text>
 <wire x1="-8.127" y1="8.127" x2="8.127" y2="8.127" width="0.2032" layer="21"/>
 <wire x1="8.127" y1="-8.127" x2="-8.127" y2="-8.127" width="0.2032" layer="21"/>
-<smd name="4" x="-7.5" y="0" dx="3" dy="1.2" layer="1"/>
-<smd name="3" x="-7.5" y="2" dx="3" dy="1.2" layer="1"/>
-<smd name="2" x="-7.5" y="4" dx="3" dy="1.2" layer="1"/>
-<smd name="1" x="-7.5" y="6" dx="3" dy="1.2" layer="1"/>
-<smd name="5" x="-7.5" y="-2" dx="3" dy="1.2" layer="1"/>
-<smd name="6" x="-7.5" y="-4" dx="3" dy="1.2" layer="1"/>
-<smd name="7" x="-7.5" y="-6" dx="3" dy="1.2" layer="1"/>
-<smd name="8" x="7.5" y="-6" dx="3" dy="1.2" layer="1"/>
-<smd name="9" x="7.5" y="-4" dx="3" dy="1.2" layer="1"/>
-<smd name="10" x="7.5" y="-2" dx="3" dy="1.2" layer="1"/>
-<smd name="11" x="7.5" y="0" dx="3" dy="1.2" layer="1"/>
-<smd name="12" x="7.5" y="2" dx="3" dy="1.2" layer="1"/>
-<smd name="13" x="7.5" y="4" dx="3" dy="1.2" layer="1"/>
-<smd name="14" x="7.5" y="6" dx="3" dy="1.2" layer="1"/>
-<wire x1="-4" y1="2" x2="-4" y2="-2" width="0.2032" layer="51"/>
-<wire x1="-4" y1="-2" x2="0" y2="-2" width="0.2032" layer="51"/>
-<wire x1="0" y1="-2" x2="0" y2="2" width="0.2032" layer="51"/>
-<wire x1="0" y1="2" x2="-4" y2="2" width="0.2032" layer="51"/>
-<text x="-5.485" y="5.35" size="1.27" layer="51" ratio="12">1</text>
+<wire x1="-4" y1="6" x2="-4" y2="2" width="0.2032" layer="51"/>
+<wire x1="-4" y1="2" x2="0" y2="2" width="0.2032" layer="51"/>
+<wire x1="0" y1="2" x2="0" y2="6" width="0.2032" layer="51"/>
+<wire x1="0" y1="6" x2="-4" y2="6" width="0.2032" layer="51"/>
+<text x="-5.485" y="5.35" size="1.27" layer="51" font="vector" ratio="12">1</text>
 <wire x1="2" y1="-0.5" x2="2" y2="1.5" width="0.2032" layer="51"/>
 <wire x1="4" y1="1.5" x2="2" y2="1.5" width="0.2032" layer="51"/>
 <wire x1="4" y1="-0.5" x2="4" y2="1.5" width="0.2032" layer="51"/>
 <wire x1="4" y1="-0.5" x2="2" y2="-0.5" width="0.2032" layer="51"/>
-<text x="0" y="8.255" size="0.6096" layer="25" font="vector" ratio="20" align="bottom-center">&gt;NAME</text>
-<text x="0" y="-6.35" size="0.6096" layer="27" font="vector" ratio="20" align="top-center">&gt;VALUE</text>
 <wire x1="-8" y1="-8" x2="8" y2="-8" width="0.127" layer="51"/>
 <wire x1="8" y1="-8" x2="8" y2="8" width="0.127" layer="51"/>
 <wire x1="8" y1="8" x2="-8" y2="8" width="0.127" layer="51"/>
 <wire x1="-8" y1="8" x2="-8" y2="-8" width="0.127" layer="51"/>
-<circle x="-8.889" y="7.492" radius="0.508" width="0" layer="21"/>
-<wire x1="-8.127" y1="6.859" x2="-8.127" y2="8.127" width="0.2032" layer="21"/>
-<wire x1="-8.127" y1="-8.127" x2="-8.127" y2="-6.859" width="0.2032" layer="21"/>
-<wire x1="8.127" y1="-6.859" x2="8.127" y2="-8.127" width="0.2032" layer="21"/>
-<wire x1="-8.127" y1="4.826" x2="-8.127" y2="5.1562" width="0.2032" layer="21"/>
-<wire x1="8.127" y1="8.127" x2="8.127" y2="6.859" width="0.2032" layer="21"/>
-<wire x1="-8.127" y1="2.826" x2="-8.127" y2="3.1562" width="0.2032" layer="21"/>
-<wire x1="-8.127" y1="0.826" x2="-8.127" y2="1.1562" width="0.2032" layer="21"/>
-<wire x1="-8.127" y1="-1.174" x2="-8.127" y2="-0.8438" width="0.2032" layer="21"/>
-<wire x1="-8.127" y1="-3.174" x2="-8.127" y2="-2.8438" width="0.2032" layer="21"/>
-<wire x1="-8.127" y1="-5.174" x2="-8.127" y2="-4.8438" width="0.2032" layer="21"/>
-<wire x1="8.127" y1="-4.826" x2="8.127" y2="-5.1562" width="0.2032" layer="21"/>
-<wire x1="8.127" y1="-2.826" x2="8.127" y2="-3.1562" width="0.2032" layer="21"/>
-<wire x1="8.127" y1="-0.826" x2="8.127" y2="-1.1562" width="0.2032" layer="21"/>
-<wire x1="8.127" y1="1.174" x2="8.127" y2="0.8438" width="0.2032" layer="21"/>
-<wire x1="8.127" y1="3.174" x2="8.127" y2="2.8438" width="0.2032" layer="21"/>
-<wire x1="8.127" y1="5.174" x2="8.127" y2="4.8438" width="0.2032" layer="21"/>
+<circle x="-9.089" y="8.392" radius="0.508" width="0" layer="21"/>
+<wire x1="-8.127" y1="-8.127" x2="-8.127" y2="-7.859" width="0.2032" layer="21"/>
+<wire x1="8.127" y1="-7.859" x2="8.127" y2="-8.127" width="0.2032" layer="21"/>
+<wire x1="-8.127" y1="5.826" x2="-8.127" y2="6.1562" width="0.2032" layer="21"/>
+<wire x1="8.127" y1="8.127" x2="8.127" y2="7.859" width="0.2032" layer="21"/>
+<wire x1="-8.127" y1="7.859" x2="-8.127" y2="8.127" width="0.2032" layer="21"/>
+<wire x1="-8.127" y1="3.826" x2="-8.127" y2="4.1562" width="0.2032" layer="21"/>
+<wire x1="-8.127" y1="1.826" x2="-8.127" y2="2.1562" width="0.2032" layer="21"/>
+<wire x1="-8.127" y1="-0.174" x2="-8.127" y2="0.1562" width="0.2032" layer="21"/>
+<wire x1="-8.127" y1="-2.174" x2="-8.127" y2="-1.8438" width="0.2032" layer="21"/>
+<wire x1="-8.127" y1="-4.174" x2="-8.127" y2="-3.8438" width="0.2032" layer="21"/>
+<wire x1="-8.127" y1="-6.174" x2="-8.127" y2="-5.8438" width="0.2032" layer="21"/>
+<wire x1="8.127" y1="-5.826" x2="8.127" y2="-6.1562" width="0.2032" layer="21"/>
+<wire x1="8.127" y1="-3.826" x2="8.127" y2="-4.1562" width="0.2032" layer="21"/>
+<wire x1="8.127" y1="-1.826" x2="8.127" y2="-2.1562" width="0.2032" layer="21"/>
+<wire x1="8.127" y1="0.174" x2="8.127" y2="-0.1562" width="0.2032" layer="21"/>
+<wire x1="8.127" y1="2.174" x2="8.127" y2="1.8438" width="0.2032" layer="21"/>
+<wire x1="8.127" y1="4.174" x2="8.127" y2="3.8438" width="0.2032" layer="21"/>
+<wire x1="8.127" y1="6.174" x2="8.127" y2="5.8438" width="0.2032" layer="21"/>
+</package>
+<package name="RFM69W-XXXS2">
+<description>&lt;h3&gt;Hope RF RFM69HW RF Transceiver&lt;/h3&gt;
+&lt;p&gt;&lt;a href="http://www.hoperf.com/upload/rf/RFM69HW-V1.3.pdf"&gt;Datasheet&lt;/a&gt;&lt;/p&gt;</description>
+<wire x1="-9.85" y1="8" x2="9.85" y2="8" width="0.127" layer="51"/>
+<wire x1="9.85" y1="-8" x2="-9.85" y2="-8" width="0.127" layer="51"/>
+<smd name="4" x="-9.35" y="1" dx="3" dy="1.2" layer="1"/>
+<smd name="3" x="-9.35" y="3" dx="3" dy="1.2" layer="1"/>
+<smd name="2" x="-9.35" y="5" dx="3" dy="1.2" layer="1"/>
+<smd name="1" x="-9.35" y="7" dx="3" dy="1.2" layer="1"/>
+<smd name="5" x="-9.35" y="-1" dx="3" dy="1.2" layer="1"/>
+<smd name="6" x="-9.35" y="-3" dx="3" dy="1.2" layer="1"/>
+<smd name="7" x="-9.35" y="-5" dx="3" dy="1.2" layer="1"/>
+<smd name="8" x="-9.35" y="-7" dx="3" dy="1.2" layer="1"/>
+<smd name="9" x="9.35" y="-7" dx="3" dy="1.2" layer="1"/>
+<smd name="10" x="9.35" y="-5" dx="3" dy="1.2" layer="1"/>
+<smd name="11" x="9.35" y="-3" dx="3" dy="1.2" layer="1"/>
+<smd name="12" x="9.35" y="-1" dx="3" dy="1.2" layer="1"/>
+<smd name="13" x="9.35" y="1" dx="3" dy="1.2" layer="1"/>
+<smd name="14" x="9.35" y="3" dx="3" dy="1.2" layer="1"/>
+<smd name="15" x="9.35" y="5" dx="3" dy="1.2" layer="1"/>
+<smd name="16" x="9.35" y="7" dx="3" dy="1.2" layer="1"/>
+<wire x1="-5" y1="-1" x2="-5" y2="-6" width="0.2032" layer="51"/>
+<wire x1="-5" y1="-6" x2="0" y2="-6" width="0.2032" layer="51"/>
+<wire x1="0" y1="-6" x2="0" y2="-1" width="0.2032" layer="51"/>
+<wire x1="0" y1="-1" x2="-5" y2="-1" width="0.2032" layer="51"/>
+<wire x1="-5" y1="7" x2="-5" y2="4" width="0.2032" layer="51"/>
+<wire x1="-5" y1="4" x2="5" y2="4" width="0.2032" layer="51"/>
+<wire x1="5" y1="4" x2="5" y2="7" width="0.2032" layer="51"/>
+<wire x1="5" y1="7" x2="-5" y2="7" width="0.2032" layer="51"/>
+<text x="-6.985" y="6.35" size="1.27" layer="51" font="vector" ratio="12">1</text>
+<text x="0" y="8.255" size="0.6096" layer="25" font="vector" ratio="20" align="bottom-center">&gt;NAME</text>
+<text x="0" y="-6.731" size="0.6096" layer="27" font="vector" ratio="20" align="top-center">&gt;VALUE</text>
+<wire x1="-9.977" y1="8.127" x2="9.977" y2="8.127" width="0.2032" layer="21"/>
+<wire x1="-9.85" y1="-8" x2="-9.85" y2="8" width="0.127" layer="51"/>
+<wire x1="9.85" y1="8" x2="9.85" y2="-8" width="0.127" layer="51"/>
+<wire x1="9.977" y1="-8.127" x2="-9.977" y2="-8.127" width="0.2032" layer="21"/>
+<circle x="-10.435" y="8.381" radius="0.508" width="0" layer="21"/>
+<wire x1="-9.977" y1="-8.127" x2="-9.977" y2="-7.875" width="0.2032" layer="21"/>
+<wire x1="-9.977" y1="7.875" x2="-9.977" y2="8.127" width="0.2032" layer="21"/>
+<wire x1="-9.977" y1="5.8166" x2="-9.977" y2="6.1722" width="0.2032" layer="21"/>
+<wire x1="-9.977" y1="3.8166" x2="-9.977" y2="4.1722" width="0.2032" layer="21"/>
+<wire x1="-9.977" y1="1.8166" x2="-9.977" y2="2.1722" width="0.2032" layer="21"/>
+<wire x1="-9.977" y1="-0.1834" x2="-9.977" y2="0.1722" width="0.2032" layer="21"/>
+<wire x1="-9.977" y1="-2.1834" x2="-9.977" y2="-1.8278" width="0.2032" layer="21"/>
+<wire x1="-9.977" y1="-4.1834" x2="-9.977" y2="-3.8278" width="0.2032" layer="21"/>
+<wire x1="-9.977" y1="-6.1834" x2="-9.977" y2="-5.8278" width="0.2032" layer="21"/>
+<wire x1="9.977" y1="-5.8166" x2="9.977" y2="-6.1722" width="0.2032" layer="21"/>
+<wire x1="9.977" y1="-3.8166" x2="9.977" y2="-4.1722" width="0.2032" layer="21"/>
+<wire x1="9.977" y1="-1.8166" x2="9.977" y2="-2.1722" width="0.2032" layer="21"/>
+<wire x1="9.977" y1="0.1834" x2="9.977" y2="-0.1722" width="0.2032" layer="21"/>
+<wire x1="9.977" y1="2.1834" x2="9.977" y2="1.8278" width="0.2032" layer="21"/>
+<wire x1="9.977" y1="4.1834" x2="9.977" y2="3.8278" width="0.2032" layer="21"/>
+<wire x1="9.977" y1="6.1834" x2="9.977" y2="5.8278" width="0.2032" layer="21"/>
+<wire x1="9.977" y1="-7.875" x2="9.977" y2="-8.127" width="0.2032" layer="21"/>
+<wire x1="9.977" y1="8.127" x2="9.977" y2="7.875" width="0.2032" layer="21"/>
 </package>
 </packages>
 <symbols>
-<symbol name="RFM69">
-<description>&lt;h3&gt;Hope RF RFM69CW ISM Transceiver Module&lt;/h3&gt; 
-&lt;p&gt;The RFM69CW radio module by HopeRF is a compact, powerful radio transceiver module for swapping data packets in the 868 MHz ISM band, using standard and enhanced FSK modulation. The radio is great for sub-compact designs; just 4mm of mounted height from using an SMD precision crystal.&lt;/p&gt;
-&lt;p&gt;&lt;a href="http://www.hoperf.com/upload/rf/RFM69CW-V1.1.pdf"&gt;Datasheet&lt;/a&gt;&lt;/p&gt;</description>
+<symbol name="RFM69H">
+<description>&lt;h3&gt;Hope RF RFM69H ISM Transceiver Module&lt;/h3&gt; 
+&lt;p&gt;The RFM69H is a transceiver module capable of operation 
+over a wide frequency range, including the 
+315,433,868 and 
+915MHz license-free ISM (Industry Scientific and Medical) 
+frequency bands. All major RF communication parameters 
+are programmable and most of them  can  be  dynamically 
+set.  The  RFM69H  offers  the unique advantage of 
+programmable narrow-band and wide- band  communication 
+modes. The RFM69H is optimized for low power 
+consumption while offering high RF output power and 
+channelized operation.
+Compliance  ETSI and FCC 
+regulations. &lt;/p&gt;
+&lt;p&gt;&lt;a href="http://www.hoperf.cn/upload/docs/RF/SX/RFM69H_DataSheet_v1.3.pdf"&gt;Datasheet&lt;/a&gt;&lt;/p&gt;</description>
 <pin name="RESET" x="-12.7" y="-10.16" length="short" direction="in"/>
-<pin name="DIO0" x="12.7" y="10.16" length="short" rot="R180"/>
-<pin name="DIO1" x="12.7" y="7.62" length="short" rot="R180"/>
-<pin name="DIO2" x="12.7" y="5.08" length="short" rot="R180"/>
-<pin name="DIO3" x="12.7" y="2.54" length="short" rot="R180"/>
+<pin name="DIO0" x="12.7" y="12.7" length="short" rot="R180"/>
+<pin name="DIO1" x="12.7" y="10.16" length="short" rot="R180"/>
+<pin name="DIO2" x="12.7" y="7.62" length="short" rot="R180"/>
+<pin name="DIO3" x="12.7" y="5.08" length="short" rot="R180"/>
+<pin name="DIO4" x="12.7" y="2.54" length="short" rot="R180"/>
 <pin name="DIO5" x="12.7" y="0" length="short" rot="R180"/>
-<pin name="3.3V" x="-12.7" y="10.16" length="short" direction="pwr"/>
+<pin name="3.3V" x="-12.7" y="12.7" length="short" direction="pwr"/>
 <pin name="GND@1" x="12.7" y="-10.16" length="short" direction="pwr" rot="R180"/>
 <pin name="ANT" x="12.7" y="-7.62" length="short" direction="pas" rot="R180"/>
 <pin name="GND@2" x="12.7" y="-5.08" length="short" direction="pwr" rot="R180"/>
@@ -11527,44 +11600,98 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <pin name="MISO" x="-12.7" y="5.08" length="short"/>
 <pin name="MOSI" x="-12.7" y="2.54" length="short" direction="in"/>
 <pin name="NSS" x="-12.7" y="-2.54" length="short" direction="in"/>
-<wire x1="-10.16" y1="12.7" x2="-10.16" y2="-12.7" width="0.254" layer="94"/>
+<wire x1="-10.16" y1="15.24" x2="-10.16" y2="-12.7" width="0.254" layer="94"/>
 <wire x1="-10.16" y1="-12.7" x2="10.16" y2="-12.7" width="0.254" layer="94"/>
-<wire x1="10.16" y1="-12.7" x2="10.16" y2="12.7" width="0.254" layer="94"/>
-<wire x1="10.16" y1="12.7" x2="-10.16" y2="12.7" width="0.254" layer="94"/>
-<text x="-10.16" y="12.954" size="1.778" layer="95" font="vector">&gt;NAME</text>
+<wire x1="10.16" y1="-12.7" x2="10.16" y2="15.24" width="0.254" layer="94"/>
+<wire x1="10.16" y1="15.24" x2="-10.16" y2="15.24" width="0.254" layer="94"/>
+<text x="-10.16" y="15.494" size="1.778" layer="95" font="vector">&gt;NAME</text>
 <text x="-10.16" y="-12.954" size="1.778" layer="96" font="vector" align="top-left">&gt;VALUE</text>
 </symbol>
 </symbols>
 <devicesets>
-<deviceset name="RFM69" prefix="U">
-<description>&lt;h3&gt;Hope RF RFM69CW ISM Transceiver Module&lt;/h3&gt; 
-&lt;p&gt;The RFM69CW radio module by HopeRF is a compact, powerful radio transceiver module for swapping data packets in the 868 MHz ISM band, using standard and enhanced FSK modulation. The radio is great for sub-compact designs; just 4mm of mounted height from using an SMD precision crystal.&lt;/p&gt;
-&lt;p&gt;&lt;a href="http://www.hoperf.com/upload/rf/RFM69CW-V1.1.pdf"&gt;Datasheet&lt;/a&gt;&lt;/p&gt;</description>
+<deviceset name="RFM69H" prefix="U">
+<description>&lt;h3&gt;Hope RF RFM69H ISM Transceiver Module&lt;/h3&gt; 
+&lt;p&gt;The RFM69H is a transceiver module capable of operation over a wide frequency range, including the 315,433,868 and 915MHz license-free ISM (Industry Scientific and Medical) frequency bands. All major RF communication parameters are programmable and most of them  can  be  dynamically set.  The  RFM69H  offers  the unique advantage of programmable narrow-band and wide- band  communication modes. The RFM69H is optimized for low power consumption while offering high RF output power and channelized operation.Compliance  ETSI and FCC regulations. &lt;/p&gt;
+&lt;p&gt;&lt;a href="http://www.hoperf.cn/upload/docs/RF/SX/RFM69H_DataSheet_v1.3.pdf"&gt;Datasheet&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;SparkFun Products&lt;/b&gt;
+&lt;ul&gt;&lt;li&gt;&lt;a href="https://www.sparkfun.com/products/13909"&gt;RFM69HCW Wireless Transceiver - 915MHz&lt;/a&gt; (COM-13909)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.sparkfun.com/products/13910"&gt;RFM69HCW Wireless Transceiver - 434MHz&lt;/a&gt; (COM-13910)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.sparkfun.com/products/12775"&gt;SparkFun RFM69 Breakout (915MHz)&lt;/a&gt; (WRL-12775)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.sparkfun.com/products/12823"&gt;SparkFun RFM69 Breakout (434MHz)&lt;/a&gt; (WRL-12823)&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;</description>
 <gates>
-<gate name="G$1" symbol="RFM69" x="0" y="0"/>
+<gate name="G$1" symbol="RFM69H" x="0" y="-2.54"/>
 </gates>
 <devices>
-<device name="CW-915MHZ" package="RFM69CW-XXXS2">
+<device name="CW-915" package="RFM69HCW-XXXS2">
 <connects>
-<connect gate="G$1" pin="3.3V" pad="2"/>
-<connect gate="G$1" pin="ANT" pad="1"/>
-<connect gate="G$1" pin="DIO0" pad="9"/>
-<connect gate="G$1" pin="DIO1" pad="11"/>
-<connect gate="G$1" pin="DIO2" pad="10"/>
-<connect gate="G$1" pin="DIO3" pad="4"/>
-<connect gate="G$1" pin="DIO5" pad="12"/>
-<connect gate="G$1" pin="GND@1" pad="3"/>
-<connect gate="G$1" pin="GND@2" pad="14"/>
-<connect gate="G$1" pin="MISO" pad="8"/>
-<connect gate="G$1" pin="MOSI" pad="5"/>
-<connect gate="G$1" pin="NSS" pad="7"/>
-<connect gate="G$1" pin="RESET" pad="13"/>
-<connect gate="G$1" pin="SCK" pad="6"/>
+<connect gate="G$1" pin="3.3V" pad="13"/>
+<connect gate="G$1" pin="ANT" pad="9"/>
+<connect gate="G$1" pin="DIO0" pad="14"/>
+<connect gate="G$1" pin="DIO1" pad="15"/>
+<connect gate="G$1" pin="DIO2" pad="16"/>
+<connect gate="G$1" pin="DIO3" pad="11"/>
+<connect gate="G$1" pin="DIO4" pad="12"/>
+<connect gate="G$1" pin="DIO5" pad="7"/>
+<connect gate="G$1" pin="GND@1" pad="1"/>
+<connect gate="G$1" pin="GND@2" pad="8 10"/>
+<connect gate="G$1" pin="MISO" pad="2"/>
+<connect gate="G$1" pin="MOSI" pad="3"/>
+<connect gate="G$1" pin="NSS" pad="5"/>
+<connect gate="G$1" pin="RESET" pad="6"/>
+<connect gate="G$1" pin="SCK" pad="4"/>
 </connects>
 <technologies>
 <technology name="">
-<attribute name="PROD_ID" value="IC-11996"/>
+<attribute name="PROD_ID" value="IC-11997"/>
 <attribute name="VALUE" value="915MHz"/>
+</technology>
+</technologies>
+</device>
+<device name="W" package="RFM69W-XXXS2">
+<connects>
+<connect gate="G$1" pin="3.3V" pad="8"/>
+<connect gate="G$1" pin="ANT" pad="10"/>
+<connect gate="G$1" pin="DIO0" pad="2"/>
+<connect gate="G$1" pin="DIO1" pad="3"/>
+<connect gate="G$1" pin="DIO2" pad="4"/>
+<connect gate="G$1" pin="DIO3" pad="5"/>
+<connect gate="G$1" pin="DIO4" pad="6"/>
+<connect gate="G$1" pin="DIO5" pad="7"/>
+<connect gate="G$1" pin="GND@1" pad="9"/>
+<connect gate="G$1" pin="GND@2" pad="11"/>
+<connect gate="G$1" pin="MISO" pad="13"/>
+<connect gate="G$1" pin="MOSI" pad="14"/>
+<connect gate="G$1" pin="NSS" pad="15"/>
+<connect gate="G$1" pin="RESET" pad="1"/>
+<connect gate="G$1" pin="SCK" pad="12"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="CW-433" package="RFM69HCW-XXXS2">
+<connects>
+<connect gate="G$1" pin="3.3V" pad="13"/>
+<connect gate="G$1" pin="ANT" pad="9"/>
+<connect gate="G$1" pin="DIO0" pad="14"/>
+<connect gate="G$1" pin="DIO1" pad="15"/>
+<connect gate="G$1" pin="DIO2" pad="16"/>
+<connect gate="G$1" pin="DIO3" pad="11"/>
+<connect gate="G$1" pin="DIO4" pad="12"/>
+<connect gate="G$1" pin="DIO5" pad="7"/>
+<connect gate="G$1" pin="GND@1" pad="1"/>
+<connect gate="G$1" pin="GND@2" pad="8 10"/>
+<connect gate="G$1" pin="MISO" pad="2"/>
+<connect gate="G$1" pin="MOSI" pad="3"/>
+<connect gate="G$1" pin="NSS" pad="5"/>
+<connect gate="G$1" pin="RESET" pad="6"/>
+<connect gate="G$1" pin="SCK" pad="4"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="PROD_ID" value="IC-12053"/>
+<attribute name="VALUE" value="433MHz"/>
 </technology>
 </technologies>
 </device>
@@ -12506,8 +12633,8 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <wire x1="2.4" y1="-1.1" x2="-2.4" y2="-1.1" width="0.0508" layer="39"/>
 <wire x1="-2.4" y1="-1.1" x2="-2.4" y2="1.1" width="0.0508" layer="39"/>
 <wire x1="2.4" y1="1.1" x2="2.4" y2="-1.1" width="0.0508" layer="39"/>
-<wire x1="-0.965" y1="0.787" x2="0.965" y2="0.787" width="0.1016" layer="51"/>
-<wire x1="-0.965" y1="-0.787" x2="0.965" y2="-0.787" width="0.1016" layer="51"/>
+<wire x1="-0.965" y1="0.7362" x2="0.965" y2="0.7362" width="0.2032" layer="51"/>
+<wire x1="-0.965" y1="-0.7362" x2="0.965" y2="-0.7362" width="0.2032" layer="51"/>
 <smd name="1" x="-1.4" y="0" dx="1.6" dy="1.8" layer="1"/>
 <smd name="2" x="1.4" y="0" dx="1.6" dy="1.8" layer="1"/>
 <text x="0" y="1.143" size="0.6096" layer="25" font="vector" ratio="20" align="bottom-center">&gt;NAME</text>
@@ -12674,11 +12801,11 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <part name="GND10" library="supply1" deviceset="GND" device=""/>
 <part name="R7" library="rcl" deviceset="R-EU_" device="R0603" value="10k"/>
 <part name="GND11" library="supply1" deviceset="GND" device=""/>
-<part name="C7" library="rcl" deviceset="C-EU" device="C0603"/>
+<part name="C7" library="rcl" deviceset="C-EU" device="C0603" value="1uF"/>
 <part name="GND13" library="supply1" deviceset="GND" device=""/>
 <part name="U$5" library="Custom" deviceset="CM200" device=""/>
-<part name="C8" library="rcl" deviceset="C-EU" device="C0603"/>
-<part name="C9" library="rcl" deviceset="C-EU" device="C0603"/>
+<part name="C8" library="rcl" deviceset="C-EU" device="C0603" value="12nF"/>
+<part name="C9" library="rcl" deviceset="C-EU" device="C0603" value="12nF"/>
 <part name="GND14" library="supply1" deviceset="GND" device=""/>
 <part name="C10" library="rcl" deviceset="C-EU" device="C0603" value="0.1uF"/>
 <part name="C11" library="rcl" deviceset="C-EU" device="C0603" value="0.1uF"/>
@@ -12688,11 +12815,11 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <part name="GND18" library="supply1" deviceset="GND" device=""/>
 <part name="GND19" library="supply1" deviceset="GND" device=""/>
 <part name="GND20" library="supply1" deviceset="GND" device=""/>
-<part name="U3" library="SparkFun-RF" deviceset="RFM69" device="CW-915MHZ" value="915MHz"/>
+<part name="U3" library="SparkFun-RF" deviceset="RFM69H" device="CW-915" value="915MHz"/>
 <part name="U$6" library="Custom" deviceset="UBLOX_MAX-8" device=""/>
 <part name="X1" library="adafruit" deviceset="SMACONNECTOR" device="_EDGE"/>
-<part name="R16" library="rcl" deviceset="R-EU_" device="R0603"/>
-<part name="R17" library="rcl" deviceset="R-EU_" device="R0603"/>
+<part name="R16" library="rcl" deviceset="R-EU_" device="R0603" value="FB"/>
+<part name="R17" library="rcl" deviceset="R-EU_" device="R0603" value="FB"/>
 <part name="Q5" library="SparkFun-DiscreteSemi" deviceset="MOSFET_PCH" device="-IRLML2244" value="4.3A/20V/54mΩ"/>
 <part name="R20" library="rcl" deviceset="R-EU_" device="R0603" value="10k"/>
 <part name="Q6" library="SparkFun-DiscreteSemi" deviceset="MOSFET_PCH" device="-IRLML2244" value="4.3A/20V/54mΩ"/>
@@ -12705,9 +12832,9 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <part name="D1" library="SparkFun-LED" deviceset="LED" device="0603"/>
 <part name="D2" library="SparkFun-LED" deviceset="LED" device="0603"/>
 <part name="D3" library="SparkFun-LED" deviceset="LED" device="0603"/>
-<part name="R23" library="rcl" deviceset="R-EU_" device="R0603"/>
-<part name="R24" library="rcl" deviceset="R-EU_" device="R0603"/>
-<part name="R25" library="rcl" deviceset="R-EU_" device="R0603"/>
+<part name="R23" library="rcl" deviceset="R-EU_" device="R0603" value="330"/>
+<part name="R24" library="rcl" deviceset="R-EU_" device="R0603" value="330"/>
+<part name="R25" library="rcl" deviceset="R-EU_" device="R0603" value="330"/>
 <part name="GND26" library="supply1" deviceset="GND" device=""/>
 <part name="GND27" library="supply1" deviceset="GND" device=""/>
 <part name="GND28" library="supply1" deviceset="GND" device=""/>
@@ -12738,11 +12865,11 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <part name="R9" library="rcl" deviceset="R-EU_" device="R0603" value="10k"/>
 <part name="R42" library="rcl" deviceset="R-EU_" device="R0603" value="10k"/>
 <part name="R43" library="rcl" deviceset="R-EU_" device="R0603" value="10k"/>
-<part name="R44" library="rcl" deviceset="R-EU_" device="R0603"/>
-<part name="R45" library="rcl" deviceset="R-EU_" device="R0603"/>
+<part name="R44" library="rcl" deviceset="R-EU_" device="R0603" value="10k"/>
+<part name="R45" library="rcl" deviceset="R-EU_" device="R0603" value="10k"/>
 <part name="GND21" library="supply1" deviceset="GND" device=""/>
-<part name="R46" library="rcl" deviceset="R-EU_" device="R0603"/>
-<part name="R47" library="rcl" deviceset="R-EU_" device="R0603"/>
+<part name="R46" library="rcl" deviceset="R-EU_" device="R0603" value="10k"/>
+<part name="R47" library="rcl" deviceset="R-EU_" device="R0603" value="10k"/>
 <part name="GND22" library="supply1" deviceset="GND" device=""/>
 <part name="U4" library="SparkFun-IC-Special-Function" deviceset="SX1509" device="" value="SX1509"/>
 <part name="SUPPLY1" library="SparkFun-PowerSymbols" deviceset="VCC" device=""/>
@@ -12773,10 +12900,11 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <part name="GND37" library="supply1" deviceset="GND" device=""/>
 <part name="R11" library="rcl" deviceset="R-EU_" device="R0603" value="10k"/>
 <part name="R12" library="rcl" deviceset="R-EU_" device="R0603" value="10k"/>
-<part name="C18" library="rcl" deviceset="C-EU" device="C0603"/>
-<part name="R13" library="rcl" deviceset="R-EU_" device="R0603"/>
-<part name="R14" library="rcl" deviceset="R-EU_" device="R0603"/>
+<part name="C18" library="rcl" deviceset="C-EU" device="C0603" value=".1uF"/>
+<part name="R13" library="rcl" deviceset="R-EU_" device="R0603" value="FB"/>
+<part name="R14" library="rcl" deviceset="R-EU_" device="R0603" value="FB"/>
 <part name="U$1" library="Custom" deviceset="SKRPABE010" device=""/>
+<part name="GND36" library="supply1" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -12844,6 +12972,7 @@ Connect SD_CD to mux input</text>
 <attribute name="NAME" x="134.62" y="138.684" size="1.778" layer="95" font="vector" align="bottom-center"/>
 </instance>
 <instance part="U$1" gate="G$1" x="22.86" y="147.32"/>
+<instance part="GND36" gate="1" x="157.48" y="205.74"/>
 </instances>
 <busses>
 </busses>
@@ -13021,12 +13150,16 @@ Connect SD_CD to mux input</text>
 <segment>
 <pinref part="U1" gate="G$1" pin="GND@18"/>
 <pinref part="U1" gate="G$1" pin="GND@42"/>
-<wire x1="48.26" y1="76.2" x2="48.26" y2="71.12" width="0.1524" layer="91"/>
+<wire x1="48.26" y1="76.2" x2="48.26" y2="73.66" width="0.1524" layer="91"/>
+<wire x1="48.26" y1="73.66" x2="48.26" y2="71.12" width="0.1524" layer="91"/>
 <wire x1="48.26" y1="71.12" x2="43.18" y2="71.12" width="0.1524" layer="91"/>
 <pinref part="GND11" gate="1" pin="GND"/>
 <wire x1="43.18" y1="71.12" x2="43.18" y2="68.58" width="0.1524" layer="91"/>
 <pinref part="U1" gate="G$1" pin="GNDANA"/>
 <wire x1="48.26" y1="81.28" x2="48.26" y2="76.2" width="0.1524" layer="91"/>
+<pinref part="U1" gate="G$1" pin="GND@35"/>
+<junction x="48.26" y="73.66"/>
+<junction x="48.26" y="76.2"/>
 </segment>
 <segment>
 <pinref part="GND13" gate="1" pin="GND"/>
@@ -13094,6 +13227,15 @@ Connect SD_CD to mux input</text>
 <junction x="149.86" y="134.62"/>
 <pinref part="S2" gate="G$1" pin="3"/>
 <wire x1="149.86" y1="137.16" x2="149.86" y2="134.62" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="IC1" gate="G$1" pin="WP"/>
+<wire x1="167.64" y1="210.82" x2="157.48" y2="210.82" width="0.1524" layer="91"/>
+<label x="149.86" y="210.82" size="1.778" layer="95"/>
+<pinref part="GND36" gate="1" pin="GND"/>
+<wire x1="157.48" y1="210.82" x2="149.86" y2="210.82" width="0.1524" layer="91"/>
+<wire x1="157.48" y1="208.28" x2="157.48" y2="210.82" width="0.1524" layer="91"/>
+<junction x="157.48" y="210.82"/>
 </segment>
 </net>
 <net name="RST" class="0">
@@ -13194,13 +13336,6 @@ Connect SD_CD to mux input</text>
 <wire x1="116.84" y1="137.16" x2="116.84" y2="139.7" width="0.1524" layer="91"/>
 <wire x1="116.84" y1="139.7" x2="121.92" y2="139.7" width="0.1524" layer="91"/>
 <label x="119.38" y="139.7" size="1.778" layer="95"/>
-</segment>
-</net>
-<net name="EEPROM_WP" class="0">
-<segment>
-<pinref part="IC1" gate="G$1" pin="WP"/>
-<wire x1="167.64" y1="210.82" x2="149.86" y2="210.82" width="0.1524" layer="91"/>
-<label x="149.86" y="210.82" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="EXT_INT" class="0">
@@ -13858,7 +13993,7 @@ Use I2C or UART?</text>
 <net name="RADIO_INT" class="0">
 <segment>
 <pinref part="U3" gate="G$1" pin="DIO0"/>
-<wire x1="45.72" y1="43.18" x2="53.34" y2="43.18" width="0.1524" layer="91"/>
+<wire x1="45.72" y1="45.72" x2="53.34" y2="43.18" width="0.1524" layer="91"/>
 <label x="48.26" y="43.18" size="1.778" layer="95"/>
 </segment>
 </net>
@@ -13893,7 +14028,7 @@ Use I2C or UART?</text>
 <net name="3.3V" class="0">
 <segment>
 <pinref part="U3" gate="G$1" pin="3.3V"/>
-<wire x1="20.32" y1="43.18" x2="5.08" y2="43.18" width="0.1524" layer="91"/>
+<wire x1="20.32" y1="45.72" x2="5.08" y2="43.18" width="0.1524" layer="91"/>
 <label x="5.08" y="43.18" size="1.778" layer="95"/>
 </segment>
 <segment>
