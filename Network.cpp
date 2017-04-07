@@ -40,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <Network.h>
 #include <Queue.h>
 #include <Packet.h>
-
+#define DEBUG
 //Default Constructor
 Network::Network() {}
 
@@ -270,18 +270,31 @@ void Network::runNetwork()
 
 long Network::receivedPacket(Packet* p)
 {
+
     uint8_t opCode = p->getopCode();
     uint8_t failedSend;
     if(this->amCoord){
       switch(opCode){
         case DTRANSMISSION:
           //TODO: upload to server;
-	  for(int i = 0; i < p->getdSize(); i++){
-          	Serial.println(p->getData(i));
-	  }
+      	  // for(int i = 0; i < p->getdSize(); i++){
+          //       	Serial.println(p->getData(i));
+      	  // }
+          #ifdef DEBUG
+          Serial.print("Received data from: ");
+          Serial.println(p->getdAddr());
+          Serial.print("Data belongs to: ");
+          Serial.println(p->getData(1));
+          Serial.print("LSB of first data: ");
+          Serial.pirntln(p->getData(5));
+          #endif
           return SUCCESS;
         case ASKFORCOORD:
           //tell the asking node that you are coord
+          #ifdef DEBUG
+          Serial.print("Asked for access from: ");
+          Serial.println(p->getdAddr());
+          #endif
           failedSend = 0;
           createPacket(IAMCOORD, this->myID, p->getsAddr(), 0, NULL, p);
           while((sendPacket(p) == NOACK) && (failedSend < DROPPEDPACKETTIMEOUT)){
@@ -289,8 +302,14 @@ long Network::receivedPacket(Packet* p)
             //TODO sleep for some amount of time. (Sould we sleep or immedeately try to resend?)
           }
           if(failedSend == DROPPEDPACKETTIMEOUT){
+            #ifdef DEBUG
+            Serial.println("Failed to tell amCoord");
+            #endif
             return FAIL; //if we couldn't get them the message then our RSSI is probibly to weak
           }
+          #ifdef DEBUG
+          Serial.println("succeded to tell amCoord");
+          #endif
           return SUCCESS;
         default:
           return IGNORED;
@@ -300,6 +319,12 @@ long Network::receivedPacket(Packet* p)
       switch(opCode){
         case DTRANSMISSION:
           //send data up to the next hop
+          #ifdef DEBUG
+          Serial.print("Received data from: ");
+          Serial.println(p.getdAddr());
+          Serial.print("Sending to next hop: ");
+          Serial.println(this.nextHop);
+          #endif
           failedSend = 0;
           p->setdAddr(this->nextHop);
           while((sendPacket(p) == NOACK) && (failedSend < DROPPEDPACKETTIMEOUT)){
@@ -307,17 +332,30 @@ long Network::receivedPacket(Packet* p)
             //TODO sleep for some amount of time. (Sould we sleep or immedeately try to resend?)
           }
           if(failedSend == DROPPEDPACKETTIMEOUT){
+            #ifdef DEBUG
+            Serial.println("Failed to send, dropped coord");
+            #endif
             return DROPPED;
           }
+          #ifdef DEBUG
+          Serial.println("Succeded in retransmiting data");
+          #endif
           return SUCCESS;
         case DROPPEDCOORD:
           //if your next hop dropped coord, then so did you
           if(p->getsAddr() == this->nextHop){
+            #ifdef DEBUG
+            Serial.println("Next hop dropped coord so I did as well");
+            #endif
             return DROPPED;
           }
           return IGNORED;
         case ASKFORCOORD:
           //tell the asking node that you have coord access
+          #ifdef DEBUG
+          Serial.print("Asked for access from: ");
+          Serial.println(p->getdAddr());
+          #endif
           failedSend = 0;
           createPacket(IHAVECOORD, this->myID, p->getsAddr(), 0, NULL, p);
           while((sendPacket(p) == NOACK) && (failedSend < DROPPEDPACKETTIMEOUT)){
@@ -325,8 +363,14 @@ long Network::receivedPacket(Packet* p)
             //TODO sleep for some amount of time. (Sould we sleep or immedeately try to resend?)
           }
           if(failedSend == DROPPEDPACKETTIMEOUT){
+            #ifdef DEBUG
+            Serial.println("Failed to tell haveCoord");
+            #endif
             return FAIL; //if we couldn't get them the message then our RSSI is probibly to weak
           }
+          #ifdef DEBUG
+          Serial.println("Succeded to tell haveCoord");
+          #endif
           return SUCCESS;
         default:
           return IGNORED;
@@ -335,8 +379,17 @@ long Network::receivedPacket(Packet* p)
     else{
       switch(opCode){
         case IAMCOORD:
-	 //TODO: may want to differentiate these later by prioritizing connecting directly to the coord
+	        //TODO: may want to differentiate these later by prioritizing connecting directly to the coord
+          #ifdef DEBUG
+          Serial.print("New connection found: ");
+          Serial.println(p->getdAddr());
+          Serial.print("RSSI: ");
+          Serial.println(p->getRSSI());
+          #endif
           if(p->getRSSI() > MINRSSI && p->getRSSI() > currentRSSI){
+            #ifdef DEBUG
+            Serial.println("Choose new next hop");
+            #endif
             this->reconnected = true;
             this->currentRSSI = p->getRSSI();
             this->nextHop = p->getsAddr();
@@ -344,7 +397,16 @@ long Network::receivedPacket(Packet* p)
           }
           return IGNORED;
         case IHAVECOORD:
+          #ifdef DEBUG
+          Serial.print("New connection found: ");
+          Serial.println(p->getdAddr());
+          Serial.print("RSSI: ");
+          Serial.println(p->getRSSI());
+          #endif
           if(p->getRSSI() > MINRSSI && p->getRSSI() > currentRSSI){
+            #ifdef DEBUG
+            Serial.println("Choose new next hop");
+            #endif
             this->reconnected = true;
             this->currentRSSI = p->getRSSI();
             this->nextHop = p->getsAddr();
