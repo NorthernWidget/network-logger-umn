@@ -17,6 +17,7 @@ void setup() {
 
   pinMode(CS2, OUTPUT);
   pinMode(LED, OUTPUT);
+  pinMode(0, INPUT);
 
   digitalWrite(CS2, LOW);
   digitalWrite(LED, LOW);
