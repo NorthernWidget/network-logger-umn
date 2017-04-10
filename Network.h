@@ -62,7 +62,7 @@ const uint8_t radioChipSelectPin = 10; //TODO:this is just a random number, chan
 #define IAMCOORD 0x05 //no data
 
 /*Defining the packet*/
-#define MAXDATASIZE RF69_MAX_DATA_LEN-1
+#define MAXDATASIZE 60
 #define BROADCASTADDRESS 255
 #define DEFAULTWAITTIME 10000 //10 seconds TBD
 #define COORDLISTENTIMEOUT 650
@@ -94,7 +94,7 @@ public:
 	void setCoord() {this->amCoord = true; };
 
 	//Set nextHop (For testing)
-	void setNextHop(int hop) { this->nextHop = hop; this->haveCoord = true};
+	void setNextHop(int hop) { this->nextHop = hop; this->haveCoord = true;};
 
 	//Set myID (For testing)
 	void setmyID(int id) { this->myID = id; };

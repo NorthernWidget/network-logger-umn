@@ -286,7 +286,7 @@ long Network::receivedPacket(Packet* p)
           Serial.print("Data belongs to: ");
           Serial.println(p->getData(1));
           Serial.print("LSB of first data: ");
-          Serial.pirntln(p->getData(5));
+          Serial.println(p->getData(5));
           #endif
           return SUCCESS;
         case ASKFORCOORD:
@@ -321,9 +321,9 @@ long Network::receivedPacket(Packet* p)
           //send data up to the next hop
           #ifdef DEBUG
           Serial.print("Received data from: ");
-          Serial.println(p.getdAddr());
+          Serial.println(p->getdAddr());
           Serial.print("Sending to next hop: ");
-          Serial.println(this.nextHop);
+          Serial.println(this->nextHop);
           #endif
           failedSend = 0;
           p->setdAddr(this->nextHop);
