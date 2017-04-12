@@ -30,9 +30,9 @@
 
 // Addresses for this node. CHANGE THESE FOR EACH NODE!
 
-#define NETWORKID     0   // Must be the same for all nodes (0 to 255)
+#define NETWORKID     1   // Must be the same for all nodes (0 to 255)
 #define MYNODEID      1   // My node ID (0 to 255)
-#define TONODEID      2   // Destination node ID (0 to 254, 255 = broadcast)
+#define TONODEID      68   // Destination node ID (0 to 254, 255 = broadcast)
 
 // RFM69 frequency, uncomment the frequency of your module:
 
@@ -41,7 +41,7 @@
 
 // AES encryption (or not):
 
-#define ENCRYPT       true // Set to "true" to use encryption
+#define ENCRYPT       false // Set to "true" to use encryption
 #define ENCRYPTKEY    "TOPSECRETPASSWRD" // Use the same 16-byte key on all nodes
 
 // Use ACKnowledge when sending messages (or not):
@@ -113,6 +113,7 @@ void loop()
   // If there is any serial input, add it to the buffer:
   if(radio.sendWithRetry(TONODEID, sendbuffer, sendlength))
   {
+    Serial.println("something");
     digitalWrite(LED,HIGH);
   }
   
