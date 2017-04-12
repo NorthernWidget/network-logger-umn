@@ -109,7 +109,7 @@ bool RFM69::initialize(uint8_t freqBand, uint8_t nodeID, uint8_t networkID)
   while (((readReg(REG_IRQFLAGS1) & RF_IRQFLAGS1_MODEREADY) == 0x00) && millis()-start < timeout); // wait for ModeReady
   if (millis()-start >= timeout)
     return false;
-  attachInterrupt(digitalPinToInterrupt(_interruptPin), RFM69::isr0, RISING);
+  //attachInterrupt(digitalPinToInterrupt(_interruptPin), RFM69::isr0, RISING);
 
   selfPointer = this;
   _address = nodeID;

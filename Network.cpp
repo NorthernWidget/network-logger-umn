@@ -67,13 +67,16 @@ retVal Network::readPacket(Packet* p)
 {
     digitalWrite(radioChipSelectPin, LOW);
     //TODO: set other chip selects high
+    if(digitalRead(_interruptPin) == HIGH){
+      this->radio.interruptHandler();
+    }
     if (this->radio.receiveDone()) {
-	delay(15);
+	      delay(15);
         p->setdSize(this->radio.DATALEN - 1);
         p->setsAddr(this->radio.SENDERID);
         p->setdAddr(this->radio.TARGETID);
         p->setopCode(this->radio.DATA[0]);
-        p->setRSSI(this->radio.readRSSI());
+        p->setRSSI(this->radio.RSSI);
         for (int i = 0; i < p->getdSize(); i++) {
             p->setdata(this->radio.DATA[i + 1], i);
         }

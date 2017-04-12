@@ -31,8 +31,8 @@ void setup() {
 void loop() {
   long opcode = 100;
   // put your main code here, to run repeatedly:
-  Serial.println("enter run");
+  //Serial.println("enter run");
   net.runNetwork();
-  Serial.println("exit run");
+  //Serial.println("exit run");
 //  delay(10);
 }
