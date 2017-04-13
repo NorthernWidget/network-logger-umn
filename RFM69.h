@@ -46,13 +46,12 @@
   #define RF69_IRQ_PIN          3
   #define RF69_IRQ_NUM          0
 #elif defined(__arm__)//Use pin 10 or any pin you want
-  #define RF69_IRQ_PIN          11
-  #define RF69_IRQ_NUM          11
+  #define RF69_IRQ_PIN          3
+  #define RF69_IRQ_NUM          3
 #else
   #define RF69_IRQ_PIN          2
   #define RF69_IRQ_NUM          0
 #endif
-
 
 #define CSMA_LIMIT              -90 // upper RX signal sensitivity threshold in dBm for carrier sense access
 #define RF69_MODE_SLEEP         0 // XTAL OFF
