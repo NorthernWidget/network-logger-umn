@@ -67,7 +67,8 @@ retVal Network::readPacket(Packet* p)
 {
     digitalWrite(radioChipSelectPin, LOW);
     //TODO: set other chip selects high
-    if(digitalRead(_interruptPin) == HIGH){
+    if(digitalRead(this->radio._interruptPin) == HIGH){
+      Serial.println("found high");
       this->radio.interruptHandler();
     }
     if (this->radio.receiveDone()) {
@@ -95,6 +96,7 @@ retVal Network::readPacket(Packet* p)
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 retVal Network::sendPacket(Packet* p)
 {
+    Serial.println("send");
     digitalWrite(radioChipSelectPin, LOW);
     //TODO: set other chip selects high
     uint8_t data[p->getdSize() + 1];
@@ -285,18 +287,18 @@ long Network::receivedPacket(Packet* p)
       	  // }
           #ifdef DEBUG
           Serial.print("Received data from: ");
-          Serial.println(p->getdAddr());
+          Serial.println(p->getsAddr());
           Serial.print("Data belongs to: ");
-          Serial.println(p->getData(1));
+          Serial.println(p->getData(0));
           Serial.print("LSB of first data: ");
-          Serial.println(p->getData(5));
+          Serial.println(p->getData(4));
           #endif
           return SUCCESS;
         case ASKFORCOORD:
           //tell the asking node that you are coord
           #ifdef DEBUG
           Serial.print("Asked for access from: ");
-          Serial.println(p->getdAddr());
+          Serial.println(p->getsAddr());
           #endif
           failedSend = 0;
           createPacket(IAMCOORD, this->myID, p->getsAddr(), 0, NULL, p);
@@ -324,7 +326,7 @@ long Network::receivedPacket(Packet* p)
           //send data up to the next hop
           #ifdef DEBUG
           Serial.print("Received data from: ");
-          Serial.println(p->getdAddr());
+          Serial.println(p->getsAddr());
           Serial.print("Sending to next hop: ");
           Serial.println(this->nextHop);
           #endif
@@ -357,7 +359,7 @@ long Network::receivedPacket(Packet* p)
           //tell the asking node that you have coord access
           #ifdef DEBUG
           Serial.print("Asked for access from: ");
-          Serial.println(p->getdAddr());
+          Serial.println(p->getsAddr());
           #endif
           failedSend = 0;
           createPacket(IHAVECOORD, this->myID, p->getsAddr(), 0, NULL, p);
@@ -385,7 +387,7 @@ long Network::receivedPacket(Packet* p)
 	        //TODO: may want to differentiate these later by prioritizing connecting directly to the coord
           #ifdef DEBUG
           Serial.print("New connection found: ");
-          Serial.println(p->getdAddr());
+          Serial.println(p->getsAddr());
           Serial.print("RSSI: ");
           Serial.println(p->getRSSI());
           #endif
@@ -402,7 +404,7 @@ long Network::receivedPacket(Packet* p)
         case IHAVECOORD:
           #ifdef DEBUG
           Serial.print("New connection found: ");
-          Serial.println(p->getdAddr());
+          Serial.println(p->getsAddr());
           Serial.print("RSSI: ");
           Serial.println(p->getRSSI());
           #endif

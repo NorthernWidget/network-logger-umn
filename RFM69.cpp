@@ -238,6 +238,9 @@ bool RFM69::sendWithRetry(uint8_t toAddress, const void* buffer, uint8_t bufferS
     sentTime = millis();
     while (millis() - sentTime < retryWaitTime)
     {
+      if(digitalRead(_interruptPin) == HIGH){
+        interruptHandler();
+      }
       if (ACKReceived(toAddress))
       {
         //Serial.print(" ~ms:"); Serial.print(millis() - sentTime);
@@ -313,7 +316,7 @@ void RFM69::sendFrame(uint8_t toAddress, const void* buffer, uint8_t bufferSize,
 void RFM69::interruptHandler() {
   //pinMode(4, OUTPUT);
   //digitalWrite(4, 1);
-  Serial.println("interrupted");
+  //Serial.println(readReg(REG_IRQFLAGS2));
   if (_mode == RF69_MODE_RX && (readReg(REG_IRQFLAGS2) & RF_IRQFLAGS2_PAYLOADREADY))
   {
     //RSSI = readRSSI();
@@ -321,11 +324,14 @@ void RFM69::interruptHandler() {
     select();
     SPI.transfer(REG_FIFO & 0x7F);
     PAYLOADLEN = SPI.transfer(0);
+    Serial.println(PAYLOADLEN);
     PAYLOADLEN = PAYLOADLEN > 66 ? 66 : PAYLOADLEN; // precaution
     TARGETID = SPI.transfer(0);
+    Serial.println(TARGETID);
     if(!(_promiscuousMode || TARGETID == _address || TARGETID == RF69_BROADCAST_ADDR) // match this node's address, or broadcast address or anything in promiscuous mode
        || PAYLOADLEN < 3) // address situation could receive packets that are malformed and don't fit this libraries extra fields
     {
+      Serial.println("not for me");
       PAYLOADLEN = 0;
       unselect();
       receiveBegin();
@@ -377,9 +383,11 @@ bool RFM69::receiveDone() {
 //ATOMIC_BLOCK(ATOMIC_FORCEON)
 //{
   noInterrupts(); // re-enabled in unselect() via setMode() or via receiveBegin()
+  //Serial.println(PAYLOADLEN);
   if (_mode == RF69_MODE_RX && PAYLOADLEN > 0)
   {
     setMode(RF69_MODE_STANDBY); // enables interrupts
+    //Serial.println("true");
     return true;
   }
   else if (_mode == RF69_MODE_RX) // already in RX no payload yet
@@ -450,13 +458,15 @@ void RFM69::select() {
   // set RFM69 SPI settings
   SPI.setDataMode(SPI_MODE0);
   SPI.setBitOrder(MSBFIRST);
-  SPI.setClockDivider(SPI_CLOCK_DIV4); // decided to slow down from DIV2 after SPI stalling in some instances, especially visible on mega1284p when RFM69 and FLASH chip both present
+  SPI.setClockDivider(SPI_CLOCK_DIV16); // decided to slow down from DIV2 after SPI stalling in some instances, especially visible on mega1284p when RFM69 and FLASH chip both present
+  //SPI.beginTransaction(SPISettings(8000000,MSBFIRST, SPI_MODE0));
   digitalWrite(_slaveSelectPin, LOW);
 }
 
 // unselect the RFM69 transceiver (set CS high, restore SPI settings)
 void RFM69::unselect() {
   digitalWrite(_slaveSelectPin, HIGH);
+  //SPI.endTransaction();
   // restore SPI settings to what they were before talking to RFM69
 #if defined (SPCR) && defined (SPSR)
   SPCR = _SPCR;

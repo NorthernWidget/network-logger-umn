@@ -128,6 +128,7 @@ class RFM69 {
     void readAllRegs();
 
     void virtual interruptHandler();
+    uint8_t _interruptPin;
   protected:
     static void isr0();
     // void virtual interruptHandler();
@@ -136,7 +137,7 @@ class RFM69 {
 
     static RFM69* selfPointer;
     uint8_t _slaveSelectPin;
-    uint8_t _interruptPin;
+    //uint8_t _interruptPin;
     uint8_t _interruptNum;
     uint8_t _address;
     bool _promiscuousMode;

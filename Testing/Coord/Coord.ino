@@ -17,7 +17,7 @@ void setup() {
 
   pinMode(CS2, OUTPUT);
   pinMode(LED, OUTPUT);
-  pinMode(0, INPUT);
+  pinMode(3, INPUT);
 
   digitalWrite(CS2, LOW);
   digitalWrite(LED, LOW);
@@ -25,14 +25,18 @@ void setup() {
 
   net.setmyID(1);
   net.setCoord();
+  //Serial.println("1");
+  //delay(5);
   net.initNetwork(1);
+  //Serial.println("2");
 }
 
 void loop() {
   long opcode = 100;
+  //Serial.println(digitalRead(2));
   // put your main code here, to run repeatedly:
-  //Serial.println("enter run");
+  Serial.println("enter run");
   net.runNetwork();
-  //Serial.println("exit run");
+  Serial.println("exit run");
 //  delay(10);
 }
