@@ -5,7 +5,8 @@
 
 #define LED           9 // LED positive pin
 #define CS1           8
-#define CS2           10
+#define CS2            2         
+#define SS            2
 
 Network net;
   
@@ -14,7 +15,7 @@ void setup() {
   Serial.begin(9600);
   Serial.print("Node ");
   Serial.println(" ready");
-
+  Serial.println(5);
   pinMode(CS2, OUTPUT);
   pinMode(LED, OUTPUT);
   pinMode(0, INPUT);

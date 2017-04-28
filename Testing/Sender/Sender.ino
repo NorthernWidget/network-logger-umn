@@ -3,8 +3,9 @@
 //#include <Logger.h>
 #include <Queue.h>
 
-#define LED           9 // LED positive pin
+#define LED           9 // LED positive pinmv
 #define CS1           8
+#define SS            10
 #define CS2           10
 
 Network net;
