@@ -32,7 +32,7 @@ PROGMEM static const RH_RF69::ModemConfig MODEM_CONFIG_TABLE[] =
     // FSK, No Manchester, no shaping, whitening, CRC, no address filtering
     // AFC BW == RX BW == 2 x bit rate
     // Low modulation indexes of ~ 1 at slow speeds do not seem to work very well. Choose MI of 2.
-    { CONFIG_FSK,  0x3e, 0x80, 0x00, 0x52, 0xf4, 0xf4, CONFIG_WHITE}, // FSK_Rb2Fd5      
+    { CONFIG_FSK,  0x3e, 0x80, 0x00, 0x52, 0xf4, 0xf4, CONFIG_WHITE}, // FSK_Rb2Fd5
     { CONFIG_FSK,  0x34, 0x15, 0x00, 0x4f, 0xf4, 0xf4, CONFIG_WHITE}, // FSK_Rb2_4Fd4_8
     { CONFIG_FSK,  0x1a, 0x0b, 0x00, 0x9d, 0xf4, 0xf4, CONFIG_WHITE}, // FSK_Rb4_8Fd9_6
 
@@ -43,7 +43,7 @@ PROGMEM static const RH_RF69::ModemConfig MODEM_CONFIG_TABLE[] =
     { CONFIG_FSK,  0x02, 0x2c, 0x07, 0xae, 0xe2, 0xe2, CONFIG_WHITE}, // FSK_Rb57_6Fd120
     { CONFIG_FSK,  0x01, 0x00, 0x08, 0x00, 0xe1, 0xe1, CONFIG_WHITE}, // FSK_Rb125Fd125
     { CONFIG_FSK,  0x00, 0x80, 0x10, 0x00, 0xe0, 0xe0, CONFIG_WHITE}, // FSK_Rb250Fd250
-    { CONFIG_FSK,  0x02, 0x40, 0x03, 0x33, 0x42, 0x42, CONFIG_WHITE}, // FSK_Rb55555Fd50 
+    { CONFIG_FSK,  0x02, 0x40, 0x03, 0x33, 0x42, 0x42, CONFIG_WHITE}, // FSK_Rb55555Fd50
 
     //  02,        03,   04,   05,   06,   19,   1a,  37
     // GFSK (BT=1.0), No Manchester, whitening, CRC, no address filtering
@@ -59,7 +59,7 @@ PROGMEM static const RH_RF69::ModemConfig MODEM_CONFIG_TABLE[] =
     { CONFIG_GFSK, 0x02, 0x2c, 0x07, 0xae, 0xe2, 0xe2, CONFIG_WHITE}, // GFSK_Rb57_6Fd120
     { CONFIG_GFSK, 0x01, 0x00, 0x08, 0x00, 0xe1, 0xe1, CONFIG_WHITE}, // GFSK_Rb125Fd125
     { CONFIG_GFSK, 0x00, 0x80, 0x10, 0x00, 0xe0, 0xe0, CONFIG_WHITE}, // GFSK_Rb250Fd250
-    { CONFIG_GFSK, 0x02, 0x40, 0x03, 0x33, 0x42, 0x42, CONFIG_WHITE}, // GFSK_Rb55555Fd50 
+    { CONFIG_GFSK, 0x02, 0x40, 0x03, 0x33, 0x42, 0x42, CONFIG_WHITE}, // GFSK_Rb55555Fd50
 
     //  02,        03,   04,   05,   06,   19,   1a,  37
     // OOK, No Manchester, no shaping, whitening, CRC, no address filtering
@@ -90,6 +90,7 @@ RH_RF69::RH_RF69(uint8_t slaveSelectPin, uint8_t interruptPin, RHGenericSPI& spi
     _interruptPin = interruptPin;
     _idleMode = RH_RF69_OPMODE_MODE_STDBY;
     _myInterruptIndex = 0xff; // Not allocated yet
+    setHeaderFlags(RH_RF69_FLAG_REQACK, 0xff); //set to request acks
 }
 
 void RH_RF69::setIdleMode(uint8_t idleMode)
@@ -121,12 +122,12 @@ bool RH_RF69::init()
     // Add by Adrien van den Bossche <vandenbo@univ-tlse2.fr> for Teensy
     // ARM M4 requires the below. else pin interrupt doesn't work properly.
     // On all other platforms, its innocuous, belt and braces
-    pinMode(_interruptPin, INPUT); 
+    pinMode(_interruptPin, INPUT);
 
     // Set up interrupt handler
     // Since there are a limited number of interrupt glue functions isr*() available,
     // we can only support a limited number of devices simultaneously
-    // ON some devices, notably most Arduinos, the interrupt pin passed in is actuallt the 
+    // ON some devices, notably most Arduinos, the interrupt pin passed in is actuallt the
     // interrupt number. You have to figure out the interruptnumber-to-interruptpin mapping
     // yourself based on knwledge of what Arduino board you are running on.
     if (_myInterruptIndex == 0xff)
@@ -165,7 +166,7 @@ bool RH_RF69::init()
 //    spiWrite(RH_RF69_REG_2E_SYNCCONFIG, RH_RF69_SYNCCONFIG_SYNCON); // auto, tolerance 0
     // PAYLOADLENGTH is default
 //    spiWrite(RH_RF69_REG_38_PAYLOADLENGTH, RH_RF69_FIFO_SIZE); // max size only for RX
-    // PACKETCONFIG 2 is default 
+    // PACKETCONFIG 2 is default
     spiWrite(RH_RF69_REG_6F_TESTDAGC, RH_RF69_TESTDAGC_CONTINUOUSDAGC_IMPROVED_LOWBETAOFF);
     // If high power boost set previously, disable it
     spiWrite(RH_RF69_REG_5A_TESTPA1, RH_RF69_TESTPA1_NORMAL);
@@ -185,7 +186,7 @@ bool RH_RF69::init()
     // No encryption
     setEncryptionKey(NULL);
     // +13dBm, same as power-on default
-    setTxPower(13); 
+    setTxPower(13);
 
     return true;
 }
@@ -222,7 +223,7 @@ void RH_RF69::handleInterrupt()
 
 // Low level function reads the FIFO and checks the address
 // Caution: since we put our headers in what the RH_RF69 considers to be the payload, if encryption is enabled
-// we have to suffer the cost of decryption before we can determine whether the address is acceptable. 
+// we have to suffer the cost of decryption before we can determine whether the address is acceptable.
 // Performance issue?
 void RH_RF69::readFifo()
 {
@@ -230,8 +231,7 @@ void RH_RF69::readFifo()
     digitalWrite(_slaveSelectPin, LOW);
     _spi.transfer(RH_RF69_REG_00_FIFO); // Send the start address with the write mask off
     uint8_t payloadlen = _spi.transfer(0); // First byte is payload len (counting the headers)
-    if (payloadlen <= RH_RF69_MAX_ENCRYPTABLE_PAYLOAD_LEN &&
-	payloadlen >= RH_RF69_HEADER_LEN)
+    if (payloadlen <= RH_RF69_MAX_ENCRYPTABLE_PAYLOAD_LEN && payloadlen >= RH_RF69_HEADER_LEN)
     {
 	_rxHeaderTo = _spi.transfer(0);
 	// Check addressing
@@ -241,8 +241,10 @@ void RH_RF69::readFifo()
 	{
 	    // Get the rest of the headers
 	    _rxHeaderFrom  = _spi.transfer(0);
-	    _rxHeaderId    = _spi.transfer(0);
+	    //_rxHeaderId    = _spi.transfer(0);
 	    _rxHeaderFlags = _spi.transfer(0);
+      ACK_RECEIVED = _rxHeaderFlags & RH_RF69_FLAG_SENDACK; // extract ACK-received flag
+      ACK_REQUESTED = _rxHeaderFlags & RH_RF69_FLAG_REQACK; // extract ACK-requested flag
 	    // And now the real payload
 	    for (_bufLen = 0; _bufLen < (payloadlen - RH_RF69_HEADER_LEN); _bufLen++)
 		_buf[_bufLen] = _spi.transfer(0);
@@ -382,16 +384,16 @@ void RH_RF69::setTxPower(int8_t power, bool ishighpowermodule)
 {
   _power = power;
   uint8_t palevel;
-  
+
   if (ishighpowermodule)
   {
     if (_power < -2)
-      _power = -2; //RFM69HW only works down to -2. 
+      _power = -2; //RFM69HW only works down to -2.
     if (_power <= 13)
     {
       // -2dBm to +13dBm
       //Need PA1 exclusivelly on RFM69HW
-      palevel = RH_RF69_PALEVEL_PA1ON | ((_power + 18) & 
+      palevel = RH_RF69_PALEVEL_PA1ON | ((_power + 18) &
       RH_RF69_PALEVEL_OUTPUTPOWER);
     }
     else if (_power >= 18)
@@ -504,30 +506,30 @@ bool RH_RF69::recv(uint8_t* buf, uint8_t* len)
     return true;
 }
 
-bool RH_RF69::send(const uint8_t* data, uint8_t len)
+bool RH_RF69::send(uint8_t toAddress, const uint8_t* data, uint8_t len)
 {
     if (len > RH_RF69_MAX_MESSAGE_LEN)
 	return false;
 
-    waitPacketSent(); // Make sure we dont interrupt an outgoing message
-    Serial.println("here");
+    //waitPacketSent(); // Make sure we dont interrupt an outgoing message
+    //Serial.println("here");
     setModeIdle(); // Prevent RX while filling the fifo
 
-    if (!waitCAD()) 
-	return false;  // Check channel activity
+    if (!waitCAD())
+	    return false;  // Check channel activity
 
     ATOMIC_BLOCK_START;
     digitalWrite(_slaveSelectPin, LOW);
     _spi.transfer(RH_RF69_REG_00_FIFO | RH_RF69_SPI_WRITE_MASK); // Send the start address with the write mask on
     _spi.transfer(len + RH_RF69_HEADER_LEN); // Include length of headers
     // First the 4 headers
-    _spi.transfer(_txHeaderTo);
-    _spi.transfer(_txHeaderFrom);
-    _spi.transfer(_txHeaderId);
+    _spi.transfer(toAddress);
+    _spi.transfer(_thisAddress);
+    //_spi.transfer(_txHeaderId);
     _spi.transfer(_txHeaderFlags);
     // Now the payload
     while (len--)
-	_spi.transfer(*data++);
+	    _spi.transfer(*data++);
     digitalWrite(_slaveSelectPin, HIGH);
     ATOMIC_BLOCK_END;
 
@@ -541,7 +543,7 @@ uint8_t RH_RF69::maxMessageLength()
 }
 
 bool RH_RF69::printRegister(uint8_t reg)
-{  
+{
 #ifdef RH_HAVE_SERIAL
     Serial.print(reg, HEX);
     Serial.print(" ");
@@ -551,7 +553,7 @@ bool RH_RF69::printRegister(uint8_t reg)
 }
 
 bool RH_RF69::printRegisters()
-{  
+{
     uint8_t i;
     for (i = 0; i < 0x50; i++)
 	printRegister(i);
@@ -559,6 +561,47 @@ bool RH_RF69::printRegisters()
     printRegister(RH_RF69_REG_58_TESTLNA);
     printRegister(RH_RF69_REG_6F_TESTDAGC);
     printRegister(RH_RF69_REG_71_TESTAFC);
-    
+
     return true;
+}
+
+bool RH_RF69::ACKReceived(uint8_t fromNodeID)
+{
+  uint8_t buf[maxMessageLength()];
+  uint8_t len;
+  if (recv(&buf, &len))
+    return (headerFrom() == fromNodeID || fromNodeID == RH_BROADCAST_ADDRESS) && ACK_RECEIVED;
+  return false;
+}
+
+bool RH_RF69::ACKRequested()
+{
+  return ACK_REQUESTED && (headerFrom() != RH_BROADCAST_ADDRESS);
+}
+
+virtual void RH_RF69::sendACK(const void* buffer, uint8_t bufferSize)
+{
+  setHeaderFlags(RH_RF69_FLAG_SENDACK, 0xff); //set the ack bit
+  send(headerTo(), buffer, bufferSize);
+  ACK_REQUESTED = 0;
+  setHeaderFlags(RH_RF69_FLAG_REQACK, 0xff); //reset to request acks
+}
+
+bool RH_RF69::sendWithRetry(uint8_t toAddress, const void* buffer, uint8_t bufferSize, uint8_t retries, uint8_t retryWaitTime) {
+  uint32_t sentTime;
+  for (uint8_t i = 0; i <= retries; i++)
+  {
+    send(toAddress, buffer, bufferSize);
+    sentTime = millis();
+    while (millis() - sentTime < retryWaitTime)
+    {
+      if (ACKReceived(toAddress))
+      {
+        //Serial.print(" ~ms:"); Serial.print(millis() - sentTime);
+        return true;
+      }
+    }
+    //Serial.print(" RETRY#"); Serial.println(i + 1);
+  }
+  return false;
 }

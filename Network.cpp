@@ -37,6 +37,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+//TODO: RSSI format
+
 #include <Network.h>
 #include <Queue.h>
 #include <Packet.h>
@@ -44,17 +47,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //Default Constructor
 Network::Network() {}
 
-void Network::initNetwork(uint8_t networkID)
+void Network::initNetwork()
 {
     //TODO: set myID from EEPROM
     //this->myID = EEPROM.read(idaddress);
-    this->networkID = networkID;
-    digitalWrite(radioChipSelectPin, LOW);
-    //TODO: set other chip selects high
-    radio.initialize(RF69_915MHZ, this->myID, this->networkID);
-    radio.writeReg(0x03, 0x0A);
-    radio.writeReg(0x04, 0x00);
-    radio.setHighPower();
+    this->radio.setThisAddress(this->myID);
+    //this->networkID = networkID;
+    //radio.initialize(RF69_915MHZ, this->myID, this->networkID);
+    //radio.writeReg(0x03, 0x0A);
+    //radio.writeReg(0x04, 0x00);
+    //radio.setHighPower();
+    //TODO: change bitrate
     //TODO: check usb connection and (un)set amCoord then (do nothing)broadcast i am coord
 }
 
@@ -65,17 +68,17 @@ void Network::initNetwork(uint8_t networkID)
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 retVal Network::readPacket(Packet* p)
 {
-    digitalWrite(radioChipSelectPin, LOW);
-    //TODO: set other chip selects high
-    if (this->radio.receiveDone()) {
-	delay(15);
-        p->setdSize(this->radio.DATALEN - 1);
-        p->setsAddr(this->radio.SENDERID);
-        p->setdAddr(this->radio.TARGETID);
-        p->setopCode(this->radio.DATA[0]);
+    uint8_t buf[maxMessageLength()];
+    uint8_t len;
+    if (this->radio.recv(&buf, &len)) {
+	      delay(15);
+        p->setdSize(len - 1);
+        p->setsAddr(this->radio.headerFrom());
+        p->setdAddr(this->radio.headerTo());
+        p->setopCode(buf[0]);
         p->setRSSI(this->radio.readRSSI());
         for (int i = 0; i < p->getdSize(); i++) {
-            p->setdata(this->radio.DATA[i + 1], i);
+            p->setdata(buf[i + 1], i);
         }
         for (int i = p->getdSize(); i < MAXDATASIZE; i++) {
             p->setdata(0, i);
@@ -92,8 +95,6 @@ retVal Network::readPacket(Packet* p)
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 retVal Network::sendPacket(Packet* p)
 {
-    digitalWrite(radioChipSelectPin, LOW);
-    //TODO: set other chip selects high
     uint8_t data[p->getdSize() + 1];
     data[0] = p->getopCode();
     for (int i = 0; i < p->getdSize(); i++) {

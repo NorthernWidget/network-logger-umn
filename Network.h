@@ -80,8 +80,8 @@ public:
     Network();
 
     //Network Functions:
-    //inits the network (main constructor) and sets the network ID
-    void initNetwork(uint8_t networkID);
+    //inits the network (main constructor)
+    void initNetwork();
 
     //handles the every wake network events
     void runNetwork();
