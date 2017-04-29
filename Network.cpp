@@ -54,6 +54,7 @@ void Network::initNetwork()
     this->radio.setThisAddress(this->myID);
     //this->networkID = networkID;
     //radio.initialize(RF69_915MHZ, this->myID, this->networkID);
+    this->radio.init();
     //radio.writeReg(0x03, 0x0A);
     //radio.writeReg(0x04, 0x00);
     //radio.setHighPower();
@@ -76,7 +77,7 @@ retVal Network::readPacket(Packet* p)
         p->setsAddr(this->radio.headerFrom());
         p->setdAddr(this->radio.headerTo());
         p->setopCode(buf[0]);
-        p->setRSSI(this->radio.readRSSI());
+        //p->setRSSI(this->radio.readRSSI());
         for (int i = 0; i < p->getdSize(); i++) {
             p->setdata(buf[i + 1], i);
         }

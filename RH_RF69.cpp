@@ -98,7 +98,7 @@ void RH_RF69::setIdleMode(uint8_t idleMode)
     _idleMode = idleMode;
 }
 
-bool RH_RF69::init()
+bool RH_RF69::()
 {
     if (!RHSPIDriver::init())
 	return false;
@@ -182,7 +182,7 @@ bool RH_RF69::init()
     // 3 would be sufficient, but this is the same as RF22's
     setPreambleLength(4);
     // An innocuous ISM frequency, same as RF22's
-    setFrequency(434.0);
+    setFrequency(915.0);
     // No encryption
     setEncryptionKey(NULL);
     // +13dBm, same as power-on default
