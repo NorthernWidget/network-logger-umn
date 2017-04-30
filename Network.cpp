@@ -77,7 +77,7 @@ retVal Network::readPacket(Packet* p)
         p->setsAddr(this->radio.headerFrom());
         p->setdAddr(this->radio.headerTo());
         p->setopCode(buf[0]);
-        //p->setRSSI(this->radio.readRSSI());
+        p->setRSSI(this->radio.rssiRead());
         for (int i = 0; i < p->getdSize(); i++) {
             p->setdata(buf[i + 1], i);
         }
@@ -162,7 +162,7 @@ void Network::foundCoord()
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void Network::droppedCoord(){
     this->haveCoord = false;
-    this->currentRSSI = 0;
+    this->currentRSSI = MINRSSI;
     Packet *p = new Packet();
     createPacket(DROPPEDCOORD, this->myID, BROADCASTADDRESS, 0, NULL, p);
     sendPacket(p);

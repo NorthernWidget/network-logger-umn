@@ -536,7 +536,8 @@ bool RH_RF69::newSend(uint8_t toAddress, const uint8_t* data, uint8_t len)
     ATOMIC_BLOCK_END;
 
     setModeTx(); // Start the transmitter
-    delay(1000);
+    uint32_t txStart = millis();
+    while (digitalRead(_interruptPin) == 0 && millis() - txStart < RF69_TX_LIMIT_MS);
     setModeIdle();
     return true;
 }

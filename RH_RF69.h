@@ -302,6 +302,7 @@
 
 // Define this to include Serial printing in diagnostic routines
 #define RH_RF69_HAVE_SERIAL
+#define RF69_TX_LIMIT_MS 1000
 static volatile uint8_t ACK_REQUESTED;
 static volatile uint8_t ACK_RECEIVED;
 

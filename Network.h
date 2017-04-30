@@ -69,7 +69,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define LFCLISTENTIMEOUT 30 //TBD
 
 #define DROPPEDPACKETTIMEOUT 5 //TBD
-#define MINRSSI 0 //TBD, maybe leave 0
+#define MINRSSI 0x80
 
 //These functions are just placeholders currently, as this code is currently
 //in development.
