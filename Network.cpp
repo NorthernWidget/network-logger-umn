@@ -45,7 +45,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <Packet.h>
 #define DEBUG
 //Default Constructor
-Network::Network(): radio(10,2) {}
+Network::Network(): radio(10,3) {}
 
 void Network::initNetwork()
 {
