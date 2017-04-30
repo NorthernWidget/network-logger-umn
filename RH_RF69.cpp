@@ -91,6 +91,8 @@ RH_RF69::RH_RF69(uint8_t slaveSelectPin, uint8_t interruptPin, RHGenericSPI& spi
     _idleMode = RH_RF69_OPMODE_MODE_STDBY;
     _myInterruptIndex = 0xff; // Not allocated yet
     setHeaderFlags(RH_RF69_FLAG_REQACK, 0xff); //set to request acks
+    ACK_RECEIVED = 0;
+    ACK_REQUESTED = 0;
 }
 
 void RH_RF69::setIdleMode(uint8_t idleMode)
@@ -98,7 +100,7 @@ void RH_RF69::setIdleMode(uint8_t idleMode)
     _idleMode = idleMode;
 }
 
-bool RH_RF69::()
+bool RH_RF69::init()
 {
     if (!RHSPIDriver::init())
 	return false;
@@ -506,7 +508,7 @@ bool RH_RF69::recv(uint8_t* buf, uint8_t* len)
     return true;
 }
 
-bool RH_RF69::send(uint8_t toAddress, const uint8_t* data, uint8_t len)
+bool RH_RF69::newSend(uint8_t toAddress, const uint8_t* data, uint8_t len)
 {
     if (len > RH_RF69_MAX_MESSAGE_LEN)
 	return false;
@@ -534,6 +536,8 @@ bool RH_RF69::send(uint8_t toAddress, const uint8_t* data, uint8_t len)
     ATOMIC_BLOCK_END;
 
     setModeTx(); // Start the transmitter
+    delay(1000);
+    setModeIdle();
     return true;
 }
 
@@ -569,7 +573,7 @@ bool RH_RF69::ACKReceived(uint8_t fromNodeID)
 {
   uint8_t buf[maxMessageLength()];
   uint8_t len;
-  if (recv(&buf, &len))
+  if (recv(buf, &len))
     return (headerFrom() == fromNodeID || fromNodeID == RH_BROADCAST_ADDRESS) && ACK_RECEIVED;
   return false;
 }
@@ -579,19 +583,19 @@ bool RH_RF69::ACKRequested()
   return ACK_REQUESTED && (headerFrom() != RH_BROADCAST_ADDRESS);
 }
 
-virtual void RH_RF69::sendACK(const void* buffer, uint8_t bufferSize)
+void RH_RF69::sendACK(const uint8_t *buffer, uint8_t bufferSize)
 {
   setHeaderFlags(RH_RF69_FLAG_SENDACK, 0xff); //set the ack bit
-  send(headerTo(), buffer, bufferSize);
+  newSend(headerTo(), buffer, bufferSize);
   ACK_REQUESTED = 0;
   setHeaderFlags(RH_RF69_FLAG_REQACK, 0xff); //reset to request acks
 }
 
-bool RH_RF69::sendWithRetry(uint8_t toAddress, const void* buffer, uint8_t bufferSize, uint8_t retries, uint8_t retryWaitTime) {
+bool RH_RF69::sendWithRetry(uint8_t toAddress, const uint8_t* buffer, uint8_t bufferSize, uint8_t retries, uint8_t retryWaitTime) {
   uint32_t sentTime;
   for (uint8_t i = 0; i <= retries; i++)
   {
-    send(toAddress, buffer, bufferSize);
+    newSend(toAddress, buffer, bufferSize);
     sentTime = millis();
     while (millis() - sentTime < retryWaitTime)
     {

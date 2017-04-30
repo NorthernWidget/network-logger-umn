@@ -66,7 +66,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define DEFAULTWAITTIME 10000 //10 seconds TBD
 #define COORDLISTENTIMEOUT 650
 #define ROUTERLISTENTIMEOUT 255
-#define LFCLISTENTIMEOUT 20 //TBD
+#define LFCLISTENTIMEOUT 30 //TBD
 
 #define DROPPEDPACKETTIMEOUT 5 //TBD
 #define MINRSSI 0 //TBD, maybe leave 0
@@ -126,7 +126,7 @@ private:
 
     //void setPath(uint8_t p[])
 
-    RH_RF69 radio(10,3); //the radio object, Chip select 10, interrupt pin 3
+    RH_RF69 radio; //the radio object, Chip select 10, interrupt pin 3
     uint8_t myID; //TODO:set this from EEPROM in initialization
     bool useAck = true; //do we want acks
     //bool 		encrypt = false;   //TODO:this will be implemented last

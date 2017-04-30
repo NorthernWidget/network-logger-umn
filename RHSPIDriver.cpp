@@ -32,7 +32,6 @@ uint8_t RHSPIDriver::spiRead(uint8_t reg)
     uint8_t val;
     ATOMIC_BLOCK_START;
 #if defined(SPI_HAS_TRANSACTION)
-    Serial.println("HAS_TRANSACTION");
     SPI.beginTransaction(_spi._settings);
 #endif
     digitalWrite(_slaveSelectPin, LOW);
@@ -43,7 +42,6 @@ uint8_t RHSPIDriver::spiRead(uint8_t reg)
     SPI.endTransaction();
 #endif
     ATOMIC_BLOCK_END;
-    Serial.println(val);
     return val;
 }
 

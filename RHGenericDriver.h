@@ -94,7 +94,6 @@ public:
     /// specify the maximum time in ms to wait. If 0 (the default) do not wait for CAD before transmitting.
     /// \return true if the message length was valid and it was correctly queued for transmit. Return false
     /// if CAD was requested and the CAD timeout timed out before clear channel was detected.
-    virtual bool send(const uint8_t* data, uint8_t len) = 0;
 
     /// Returns the maximum message length
     /// available in this Driver.

@@ -302,6 +302,9 @@
 
 // Define this to include Serial printing in diagnostic routines
 #define RH_RF69_HAVE_SERIAL
+static volatile uint8_t ACK_REQUESTED;
+static volatile uint8_t ACK_RECEIVED;
+
 
 
 /////////////////////////////////////////////////////////////////////
@@ -858,7 +861,7 @@ public:
     /// \param[in] data Array of data to be sent
     /// \param[in] len Number of bytes of data to send (> 0)
     /// \return true if the message length was valid and it was correctly queued for transmit
-    bool        send(const uint8_t* data, uint8_t len);
+    bool        newSend(uint8_t toAddress, const uint8_t* data, uint8_t len);
 
     /// Sets the length of the preamble
     /// in bytes.
@@ -929,12 +932,10 @@ public:
     /// \return The integer device type
     uint16_t deviceType() {return _deviceType;};
 
-    static volatile uint8_t ACK_REQUESTED = 0;
-    static volatile uint8_t ACK_RECEIVED = 0;
     bool ACKReceived(uint8_t fromNodeID);
     bool ACKRequested();
-    virtual void sendACK(const void* buffer = "", uint8_t bufferSize=0);
-    virtual bool sendWithRetry(uint8_t toAddress, const void* buffer, uint8_t bufferSize, uint8_t retries=2, uint8_t retryWaitTime=40);
+    void sendACK(const uint8_t* buffer = 0, uint8_t bufferSize=0);
+    bool sendWithRetry(uint8_t toAddress, const uint8_t* buffer, uint8_t bufferSize, uint8_t retries=2, uint8_t retryWaitTime=40);
 
 protected:
     /// This is a low level function to handle the interrupts for one instance of RF69.

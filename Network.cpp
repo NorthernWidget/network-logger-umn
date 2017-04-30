@@ -45,7 +45,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <Packet.h>
 #define DEBUG
 //Default Constructor
-Network::Network() {}
+Network::Network(): radio(10,2) {}
 
 void Network::initNetwork()
 {
@@ -69,9 +69,9 @@ void Network::initNetwork()
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 retVal Network::readPacket(Packet* p)
 {
-    uint8_t buf[maxMessageLength()];
-    uint8_t len;
-    if (this->radio.recv(&buf, &len)) {
+    uint8_t buf[this->radio.maxMessageLength()];
+    uint8_t len = radio.maxMessageLength();
+    if (this->radio.recv(buf, &len)) {
 	      delay(15);
         p->setdSize(len - 1);
         p->setsAddr(this->radio.headerFrom());
@@ -111,7 +111,7 @@ retVal Network::sendPacket(Packet* p)
     }
     else {
         delay(100);
-        this->radio.send(p->getdAddr(), data, p->getdSize() + 1);
+        this->radio.newSend(p->getdAddr(), data, p->getdSize() + 1);
         return SUCCESS;
     }
 }
@@ -253,7 +253,7 @@ void Network::runNetwork()
             else{
                 ++noPacketReceived;
             }
-	    delay(20);
+	    delay(100);
             //TODO sleep for some amount of time. Can change the sleep time depending
             //on whether or not we received a packet.
         }
@@ -388,7 +388,7 @@ long Network::receivedPacket(Packet* p)
           Serial.print("RSSI: ");
           Serial.println(p->getRSSI());
           #endif
-          if(p->getRSSI() > MINRSSI && p->getRSSI() > currentRSSI){
+          if(p->getRSSI() >= MINRSSI && p->getRSSI() >= currentRSSI){
             #ifdef DEBUG
             Serial.println("Choose new next hop");
             #endif
@@ -405,7 +405,7 @@ long Network::receivedPacket(Packet* p)
           Serial.print("RSSI: ");
           Serial.println(p->getRSSI());
           #endif
-          if(p->getRSSI() > MINRSSI && p->getRSSI() > currentRSSI){
+          if(p->getRSSI() >= MINRSSI && p->getRSSI() >= currentRSSI){
             #ifdef DEBUG
             Serial.println("Choose new next hop");
             #endif
