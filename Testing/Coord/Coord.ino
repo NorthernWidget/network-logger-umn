@@ -16,7 +16,7 @@ void setup() {
 
   net.setmyID(1);
   net.setCoord();
-  net.initNetwork(1);
+  net.initNetwork();
 }
 
 void loop() {

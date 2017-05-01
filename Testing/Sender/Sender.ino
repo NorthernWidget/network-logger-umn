@@ -14,16 +14,17 @@ void setup() {
 
   delay(4);
 
-  net.setmyID(68);
-  net.initNetwork(1);
+  net.setmyID(2);
+  net.initNetwork();
   //net.setNextHop(1);
   //net.setCoord();
 }
 
 void loop() {
-  static long opcode = 7;
+  static long opcode = 0x33333333L;
   // put your main code here, to run repeatedly:
   net.sendOverNetwork(opcode);
-  delay(10);
+  opcode++;
+  delay(4000);
   net.runNetwork();
 }

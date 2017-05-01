@@ -5,7 +5,7 @@
 
 #include <RHDatagram.h>
 
-RHDatagram::RHDatagram(RHGenericDriver& driver, uint8_t thisAddress) 
+RHDatagram::RHDatagram(RHGenericDriver& driver, uint8_t thisAddress)
     :
     _driver(driver),
     _thisAddress(thisAddress)
@@ -40,10 +40,18 @@ bool RHDatagram::recvfrom(uint8_t* buf, uint8_t* len, uint8_t* from, uint8_t* to
 {
     if (_driver.recv(buf, len))
     {
+      // Serial.println("reading received message:");
+      // Serial.print("My address: ");
+      // Serial.println(_thisAddress);
+      // Serial.print("Message sent to: ");
+      // Serial.println(headerTo());
+      // Serial.print("Message Sent from: ");
+      // Serial.println(headerFrom());
 	if (from)  *from =  headerFrom();
 	if (to)    *to =    headerTo();
 	if (id)    *id =    headerId();
 	if (flags) *flags = headerFlags();
+  //Serial.println(*from);
 	return true;
     }
     return false;
@@ -118,6 +126,3 @@ uint8_t RHDatagram::headerFlags()
 {
     return _driver.headerFlags();
 }
-
-
-

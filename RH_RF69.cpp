@@ -234,6 +234,12 @@ void RH_RF69::readFifo()
 	payloadlen >= RH_RF69_HEADER_LEN)
     {
 	_rxHeaderTo = _spi.transfer(0);
+  // Serial.println("reading received message:");
+  // Serial.print("My address: ");
+  // Serial.println(_thisAddress);
+  // Serial.print("Message sent to: ");
+  // Serial.println(_rxHeaderTo);
+  // Serial.print("Message Sent from: ");
 	// Check addressing
 	if (_promiscuous ||
 	    _rxHeaderTo == _thisAddress ||
@@ -243,6 +249,7 @@ void RH_RF69::readFifo()
 	    _rxHeaderFrom  = _spi.transfer(0);
 	    _rxHeaderId    = _spi.transfer(0);
 	    _rxHeaderFlags = _spi.transfer(0);
+      //Serial.println(_rxHeaderFrom);
 	    // And now the real payload
 	    for (_bufLen = 0; _bufLen < (payloadlen - RH_RF69_HEADER_LEN); _bufLen++)
 		_buf[_bufLen] = _spi.transfer(0);
@@ -524,6 +531,13 @@ bool RH_RF69::send(const uint8_t* data, uint8_t len)
     _spi.transfer(_txHeaderFrom);
     _spi.transfer(_txHeaderId);
     _spi.transfer(_txHeaderFlags);
+    // Serial.println("Sending message");
+    // Serial.print("My address: ");
+    // Serial.println(_thisAddress);
+    // Serial.print("From header: ");
+    // Serial.println(_txHeaderFrom);
+    // Serial.print("Who I am sending to: ");
+    // Serial.println(_txHeaderTo);
     // Now the payload
     while (len--)
 	_spi.transfer(*data++);

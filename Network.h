@@ -46,8 +46,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define Network_h
 //radio globals
 //#define FREQUENCY     RF69_915MHZ
-#define INTERRUPTPIN 13
-#define CHIPSELECTPIN 5
+#define INTERRUPTPIN 2
+#define CHIPSELECTPIN 10
     //RetVal
     enum retVal { SUCCESS, 		//Generic Success
         		  FAIL, 		//Generic Failure
@@ -65,11 +65,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /*Defining the packet*/
 #define MAXDATASIZE 59
 #define BROADCASTADDRESS 255
-
+#define COORDLISTENTIMEOUT 10
 #define SENDTIMEOUT 500
 #define SENDRETRIES 5
 #define RECEIVETIMEOUT 2500
-#define MINRSSI 0x80
+#define MINRSSI -128
 
 //These functions are just placeholders currently, as this code is currently
 //in development.

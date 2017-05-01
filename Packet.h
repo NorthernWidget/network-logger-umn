@@ -17,7 +17,7 @@
  */
 #ifndef PACKET_H
 #define PACKET_H
-#define MAXDATASIZE 60
+#define MAXDATASIZE 59
 class Packet {
 public:
     Packet(){}

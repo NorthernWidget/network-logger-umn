@@ -81,6 +81,8 @@ bool RHReliableDatagram::sendtoWait(uint8_t* buf, uint8_t len, uint8_t address)
 		uint8_t from, to, id, flags;
 		if (recvfrom(0, 0, &from, &to, &id, &flags)) // Discards the message
 		{
+      //Serial.println(from);
+      //Serial.println(address);
 		    // Now have a message: is it our ACK?
 		    if (   from == address
 			   && to == _thisAddress
@@ -134,10 +136,10 @@ bool RHReliableDatagram::recvfromAck(uint8_t* buf, uint8_t* len, uint8_t* from, 
 	    // If we have not seen this message before, then we are interested in it
 	  //   if (_id != _seenIds[_from])
 	  //   {
-		// if (from)  *from =  _from;
-		// if (to)    *to =    _to;
-		// if (id)    *id =    _id;
-		// if (flags) *flags = _flags;
+		if (from)  *from =  _from;
+		if (to)    *to =    _to;
+		if (id)    *id =    _id;
+		if (flags) *flags = _flags;
 		// _seenIds[_from] = _id;
 		// return true;
 	  //   }

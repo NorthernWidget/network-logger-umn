@@ -53,12 +53,13 @@ void Network::initNetwork()
 {
     //TODO: set myID from EEPROM
     //this->myID = EEPROM.read(idaddress);
-    this->radio.setThisAddress(this->myID);
     this->radio.setRetries(SENDRETRIES);
     this->radio.setTimeout(SENDTIMEOUT);
     //this->networkID = networkID;
     //radio.initialize(RF69_915MHZ, this->myID, this->networkID);
     this->radio.init();
+    this->radio.setThisAddress(this->myID);
+    Serial.println(this->radio.thisAddress());
     //radio.writeReg(0x03, 0x0A);
     //radio.writeReg(0x04, 0x00);
     //radio.setHighPower();
@@ -73,16 +74,16 @@ void Network::initNetwork()
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 retVal Network::readPacket(Packet* p)
 {
-    uint8_t len = this->radio.maxMessageLength();
+    uint8_t len = this->driver.maxMessageLength();
     uint8_t buf[len];
-    uinit8_t to, from;
+    uint8_t to, from;
     if (this->radio.recvfromAckTimeout(buf, &len, RECEIVETIMEOUT, &from, &to)) {
 	      delay(15);
         p->setdSize(len - 1);
         p->setsAddr(from);
         p->setdAddr(to);
         p->setopCode(buf[0]);
-        p->setRSSI(this->radio.rssiRead());
+        p->setRSSI(this->driver.rssiRead());
         for (int i = 0; i < p->getdSize(); i++) {
             p->setdata(buf[i + 1], i);
         }
@@ -133,6 +134,7 @@ void Network::createPacket(uint8_t opCode, uint8_t sAddr, uint8_t dAddr, uint8_t
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void Network::lookForCoord()
 {
+    //Serial.println("LFC");
     Packet *p = new Packet();
     createPacket(ASKFORCOORD, this->myID, BROADCASTADDRESS, 0, NULL, p);
     sendPacket(p);
@@ -212,17 +214,17 @@ void Network::runNetwork()
               return;
             }
         }
-		    //listen forward
-        bool dropped = false;
-        while(readPacket(p) == SUCCESS){
-            if(receivedPacket(p) == DROPPED){
-              dropped = true;
-              break;
-            }
-        }
-        if(dropped){
-          droppedCoord();
-        }
+		    // //listen forward
+        // bool dropped = false;
+        // while(readPacket(p) == SUCCESS){
+        //     if(receivedPacket(p) == DROPPED){
+        //       dropped = true;
+        //       break;
+        //     }
+        // }
+        // if(dropped){
+        //   droppedCoord();
+        // }
 	}
 	else{
         //TODO: While not reconnected?
@@ -264,7 +266,7 @@ long Network::receivedPacket(Packet* p)
           Serial.print("Data belongs to: ");
           Serial.println(p->getData(0));
           Serial.print("LSB of first data: ");
-          Serial.println(p->getData(1));
+          Serial.println(p->getData(5));
           #endif
           return SUCCESS;
         case ASKFORCOORD:
