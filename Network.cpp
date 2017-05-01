@@ -45,13 +45,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <Packet.h>
 #define DEBUG
 //Default Constructor
-Network::Network(): radio(10,3) {}
+Network::Network():
+    driver(CHIPSELECTPIN,INTERRUPTPIN),
+    radio(driver) {}
 
 void Network::initNetwork()
 {
     //TODO: set myID from EEPROM
     //this->myID = EEPROM.read(idaddress);
     this->radio.setThisAddress(this->myID);
+    this->radio.setRetries(SENDRETRIES);
+    this->radio.setTimeout(SENDTIMEOUT);
     //this->networkID = networkID;
     //radio.initialize(RF69_915MHZ, this->myID, this->networkID);
     this->radio.init();
@@ -69,13 +73,14 @@ void Network::initNetwork()
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 retVal Network::readPacket(Packet* p)
 {
-    uint8_t buf[this->radio.maxMessageLength()];
-    uint8_t len = radio.maxMessageLength();
-    if (this->radio.recv(buf, &len)) {
+    uint8_t len = this->radio.maxMessageLength();
+    uint8_t buf[len];
+    uinit8_t to, from;
+    if (this->radio.recvfromAckTimeout(buf, &len, RECEIVETIMEOUT, &from, &to)) {
 	      delay(15);
         p->setdSize(len - 1);
-        p->setsAddr(this->radio.headerFrom());
-        p->setdAddr(this->radio.headerTo());
+        p->setsAddr(from);
+        p->setdAddr(to);
         p->setopCode(buf[0]);
         p->setRSSI(this->radio.rssiRead());
         for (int i = 0; i < p->getdSize(); i++) {
@@ -84,8 +89,6 @@ retVal Network::readPacket(Packet* p)
         for (int i = p->getdSize(); i < MAXDATASIZE; i++) {
             p->setdata(0, i);
         }
-	if (this->radio.ACKRequested())
-            this->radio.sendACK();
         return SUCCESS;
     }
     return NOMESSAGE;
@@ -101,18 +104,11 @@ retVal Network::sendPacket(Packet* p)
     for (int i = 0; i < p->getdSize(); i++) {
         data[i + 1] = p->getData(i);
     }
-    if (this->useAck && p->getdAddr() != BROADCASTADDRESS) {
-        if (this->radio.sendWithRetry(p->getdAddr(), data, p->getdSize() + 1)) {
-            return SUCCESS;
-        }
-        else {
-            return NOACK;
-        }
+    if (this->radio.sendtoWait(data, p->getdSize() + 1, p->getdAddr())) {
+        return SUCCESS;
     }
     else {
-        delay(100);
-        this->radio.newSend(p->getdAddr(), data, p->getdSize() + 1);
-        return SUCCESS;
+        return NOACK;
     }
 }
 
@@ -199,7 +195,7 @@ void Network::runNetwork()
         long d;
         while(!dataQueue.isEmpty()){
             data[0] = this->myID;
-            for(index = 1 ; index<MAXDATASIZE-3 && !dataQueue.isEmpty();){
+            for(index = 1 ; index<(MAXDATASIZE-3) && !dataQueue.isEmpty();){ //if index == MAXDATASIZE-4 then one more data will fit
                 d = dataQueue.dequeue();
                 data[index++] = d >> 24;
                 data[index++] = d >> 16;
@@ -208,11 +204,7 @@ void Network::runNetwork()
             }
             uint8_t failedSend = 0;
             createPacket(DTRANSMISSION, this->myID, this->nextHop, index, data, p);
-            while((sendPacket(p) == NOACK) && (failedSend < DROPPEDPACKETTIMEOUT)){
-              failedSend++;
-              //TODO sleep for some amount of time. (Sould we sleep or immedeately try to resend?)
-            }
-            if(failedSend == DROPPEDPACKETTIMEOUT){
+            if(sendPacket(p) == NOACK){
               //handle what happens on timeout (Never get ACK'd)
               droppedCoord();
               delete p;
@@ -222,40 +214,24 @@ void Network::runNetwork()
         }
 		    //listen forward
         bool dropped = false;
-        while(noPacketReceived < ROUTERLISTENTIMEOUT){
-            if(readPacket(p) != NOMESSAGE){
-                if(receivedPacket(p) == DROPPED){
-                  dropped = true;
-                  break;
-                }
+        while(readPacket(p) == SUCCESS){
+            if(receivedPacket(p) == DROPPED){
+              dropped = true;
+              break;
             }
-            else{
-                ++noPacketReceived;
-            }
-            //TODO sleep for some amount of time. Can change the sleep time depending
-            //on whether or not we received a packet.
         }
         if(dropped){
           droppedCoord();
         }
 	}
 	else{
+        //TODO: While not reconnected?
 		    //ask for coord
         lookForCoord(); //NOTE: from Jeff, I think we should send this every so many (5 maybe? TDB) noPacketReceived
         delay(20);
-                        //incremnets in case no one was listening
 		    //listen and choose best next hop
-        while(noPacketReceived < LFCLISTENTIMEOUT){
-            if(readPacket(p) != NOMESSAGE){
-                delay(100);
-                receivedPacket(p);
-            }
-            else{
-                ++noPacketReceived;
-            }
-	    delay(100);
-            //TODO sleep for some amount of time. Can change the sleep time depending
-            //on whether or not we received a packet.
+        while(readPacket(p) ==  SUCCESS){ //read packet blocks until a message is received or the timeout occurs
+            receivedPacket(p);
         }
         //next best hop is selected in receivedPacket()
         //after we have listened long enough and we have
@@ -299,11 +275,7 @@ long Network::receivedPacket(Packet* p)
           #endif
           failedSend = 0;
           createPacket(IAMCOORD, this->myID, p->getsAddr(), 0, NULL, p);
-          while((sendPacket(p) == NOACK) && (failedSend < DROPPEDPACKETTIMEOUT)){
-            failedSend++;
-            //TODO sleep for some amount of time. (Sould we sleep or immedeately try to resend?)
-          }
-          if(failedSend == DROPPEDPACKETTIMEOUT){
+          if(sendPacket(p) == NOACK){
             #ifdef DEBUG
             Serial.println("Failed to tell amCoord");
             #endif
@@ -329,11 +301,7 @@ long Network::receivedPacket(Packet* p)
           #endif
           failedSend = 0;
           p->setdAddr(this->nextHop);
-          while((sendPacket(p) == NOACK) && (failedSend < DROPPEDPACKETTIMEOUT)){
-            failedSend++;
-            //TODO sleep for some amount of time. (Sould we sleep or immedeately try to resend?)
-          }
-          if(failedSend == DROPPEDPACKETTIMEOUT){
+          if(sendPacket(p) == NOACK){
             #ifdef DEBUG
             Serial.println("Failed to send, dropped coord");
             #endif
@@ -360,11 +328,7 @@ long Network::receivedPacket(Packet* p)
           #endif
           failedSend = 0;
           createPacket(IHAVECOORD, this->myID, p->getsAddr(), 0, NULL, p);
-          while((sendPacket(p) == NOACK) && (failedSend < DROPPEDPACKETTIMEOUT)){
-            failedSend++;
-            //TODO sleep for some amount of time. (Sould we sleep or immedeately try to resend?)
-          }
-          if(failedSend == DROPPEDPACKETTIMEOUT){
+          if(sendPacket(p) == NOACK){
             #ifdef DEBUG
             Serial.println("Failed to tell haveCoord");
             #endif
@@ -419,11 +383,7 @@ long Network::receivedPacket(Packet* p)
           //let the node that just sent us data know that we don't have coord access anymore
           failedSend = 0;
           createPacket(DROPPEDCOORD, this->myID, p->getsAddr(), 0, NULL, p);
-          while((sendPacket(p) == NOACK) && (failedSend < DROPPEDPACKETTIMEOUT)){
-            failedSend++;
-            //TODO sleep for some amount of time. (Sould we sleep or immedeately try to resend?)
-          }
-          if(failedSend == DROPPEDPACKETTIMEOUT){
+          if(sendPacket(p) == NOACK){
             return FAIL; //if we couldn't get them the message then our RSSI is probibly to weak
           }
           return SUCCESS;

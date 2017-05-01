@@ -90,9 +90,6 @@ RH_RF69::RH_RF69(uint8_t slaveSelectPin, uint8_t interruptPin, RHGenericSPI& spi
     _interruptPin = interruptPin;
     _idleMode = RH_RF69_OPMODE_MODE_STDBY;
     _myInterruptIndex = 0xff; // Not allocated yet
-    setHeaderFlags(RH_RF69_FLAG_REQACK, 0xff); //set to request acks
-    ACK_RECEIVED = 0;
-    ACK_REQUESTED = 0;
 }
 
 void RH_RF69::setIdleMode(uint8_t idleMode)
@@ -233,7 +230,8 @@ void RH_RF69::readFifo()
     digitalWrite(_slaveSelectPin, LOW);
     _spi.transfer(RH_RF69_REG_00_FIFO); // Send the start address with the write mask off
     uint8_t payloadlen = _spi.transfer(0); // First byte is payload len (counting the headers)
-    if (payloadlen <= RH_RF69_MAX_ENCRYPTABLE_PAYLOAD_LEN && payloadlen >= RH_RF69_HEADER_LEN)
+    if (payloadlen <= RH_RF69_MAX_ENCRYPTABLE_PAYLOAD_LEN &&
+	payloadlen >= RH_RF69_HEADER_LEN)
     {
 	_rxHeaderTo = _spi.transfer(0);
 	// Check addressing
@@ -243,10 +241,8 @@ void RH_RF69::readFifo()
 	{
 	    // Get the rest of the headers
 	    _rxHeaderFrom  = _spi.transfer(0);
-	    //_rxHeaderId    = _spi.transfer(0);
+	    _rxHeaderId    = _spi.transfer(0);
 	    _rxHeaderFlags = _spi.transfer(0);
-      ACK_RECEIVED = _rxHeaderFlags & RH_RF69_FLAG_SENDACK; // extract ACK-received flag
-      ACK_REQUESTED = _rxHeaderFlags & RH_RF69_FLAG_REQACK; // extract ACK-requested flag
 	    // And now the real payload
 	    for (_bufLen = 0; _bufLen < (payloadlen - RH_RF69_HEADER_LEN); _bufLen++)
 		_buf[_bufLen] = _spi.transfer(0);
@@ -508,37 +504,33 @@ bool RH_RF69::recv(uint8_t* buf, uint8_t* len)
     return true;
 }
 
-bool RH_RF69::newSend(uint8_t toAddress, const uint8_t* data, uint8_t len)
+bool RH_RF69::send(const uint8_t* data, uint8_t len)
 {
     if (len > RH_RF69_MAX_MESSAGE_LEN)
 	return false;
 
-    //waitPacketSent(); // Make sure we dont interrupt an outgoing message
-    //Serial.println("here");
+    waitPacketSent(); // Make sure we dont interrupt an outgoing message
     setModeIdle(); // Prevent RX while filling the fifo
 
     if (!waitCAD())
-	    return false;  // Check channel activity
+	return false;  // Check channel activity
 
     ATOMIC_BLOCK_START;
     digitalWrite(_slaveSelectPin, LOW);
     _spi.transfer(RH_RF69_REG_00_FIFO | RH_RF69_SPI_WRITE_MASK); // Send the start address with the write mask on
     _spi.transfer(len + RH_RF69_HEADER_LEN); // Include length of headers
     // First the 4 headers
-    _spi.transfer(toAddress);
-    _spi.transfer(_thisAddress);
-    //_spi.transfer(_txHeaderId);
+    _spi.transfer(_txHeaderTo);
+    _spi.transfer(_txHeaderFrom);
+    _spi.transfer(_txHeaderId);
     _spi.transfer(_txHeaderFlags);
     // Now the payload
     while (len--)
-	    _spi.transfer(*data++);
+	_spi.transfer(*data++);
     digitalWrite(_slaveSelectPin, HIGH);
     ATOMIC_BLOCK_END;
 
     setModeTx(); // Start the transmitter
-    uint32_t txStart = millis();
-    while (digitalRead(_interruptPin) == 0 && millis() - txStart < RF69_TX_LIMIT_MS);
-    setModeIdle();
     return true;
 }
 
@@ -568,45 +560,4 @@ bool RH_RF69::printRegisters()
     printRegister(RH_RF69_REG_71_TESTAFC);
 
     return true;
-}
-
-bool RH_RF69::ACKReceived(uint8_t fromNodeID)
-{
-  uint8_t buf[maxMessageLength()];
-  uint8_t len;
-  if (recv(buf, &len))
-    return (headerFrom() == fromNodeID || fromNodeID == RH_BROADCAST_ADDRESS) && ACK_RECEIVED;
-  return false;
-}
-
-bool RH_RF69::ACKRequested()
-{
-  return ACK_REQUESTED && (headerFrom() != RH_BROADCAST_ADDRESS);
-}
-
-void RH_RF69::sendACK(const uint8_t *buffer, uint8_t bufferSize)
-{
-  setHeaderFlags(RH_RF69_FLAG_SENDACK, 0xff); //set the ack bit
-  newSend(headerTo(), buffer, bufferSize);
-  ACK_REQUESTED = 0;
-  setHeaderFlags(RH_RF69_FLAG_REQACK, 0xff); //reset to request acks
-}
-
-bool RH_RF69::sendWithRetry(uint8_t toAddress, const uint8_t* buffer, uint8_t bufferSize, uint8_t retries, uint8_t retryWaitTime) {
-  uint32_t sentTime;
-  for (uint8_t i = 0; i <= retries; i++)
-  {
-    newSend(toAddress, buffer, bufferSize);
-    sentTime = millis();
-    while (millis() - sentTime < retryWaitTime)
-    {
-      if (ACKReceived(toAddress))
-      {
-        //Serial.print(" ~ms:"); Serial.print(millis() - sentTime);
-        return true;
-      }
-    }
-    //Serial.print(" RETRY#"); Serial.println(i + 1);
-  }
-  return false;
 }

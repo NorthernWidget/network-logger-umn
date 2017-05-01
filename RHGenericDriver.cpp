@@ -82,7 +82,7 @@ bool RHGenericDriver::waitCAD()
     unsigned long t = millis();
     while (isChannelActive())
     {
-         if (millis() - t > _cad_timeout)
+         if (millis() - t > _cad_timeout) 
 	     return false;
 #if (RH_PLATFORM == RH_PLATFORM_STM32) // stdlib on STMF103 gets confused if random is redefined
 	 delay(_random(1, 10) * 100);

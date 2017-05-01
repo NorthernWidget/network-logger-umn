@@ -33,9 +33,7 @@
 
 // The length of the headers we add.
 // The headers are inside the RF69's payload and are therefore encrypted if encryption is enabled
-//#define RH_RF69_HEADER_LEN 4
-//changed to 3 for removal of one header item "headerId"
-#define RH_RF69_HEADER_LEN 3
+#define RH_RF69_HEADER_LEN 4
 
 // This is the maximum message length that can be supported by this driver. Limited by
 // the size of the FIFO, since we are unable to support on-the-fly filling and emptying
@@ -55,14 +53,10 @@
 // This is the default node address,
 #define RH_RF69_DEFAULT_NODE_ADDRESS 0
 
-//Flag bits for sending and requesting acks
-#define RH_RF69_FLAG_SENDACK   0x80
-#define RH_RF69_FLAG_REQACK    0x40
-
 // You can define the following macro (either by editing here or by passing it as a compiler definition
 // to change the default value of the ishighpowermodule argument to setTxPower to true
 //
-// #define RFM69_HW
+#define RFM69_HW
 #ifdef RFM69_HW
 #define RH_RF69_DEFAULT_HIGHPOWER true
 #else
@@ -302,10 +296,6 @@
 
 // Define this to include Serial printing in diagnostic routines
 #define RH_RF69_HAVE_SERIAL
-#define RF69_TX_LIMIT_MS 1000
-static volatile uint8_t ACK_REQUESTED;
-static volatile uint8_t ACK_RECEIVED;
-
 
 
 /////////////////////////////////////////////////////////////////////
@@ -862,7 +852,7 @@ public:
     /// \param[in] data Array of data to be sent
     /// \param[in] len Number of bytes of data to send (> 0)
     /// \return true if the message length was valid and it was correctly queued for transmit
-    bool        newSend(uint8_t toAddress, const uint8_t* data, uint8_t len);
+    bool        send(const uint8_t* data, uint8_t len);
 
     /// Sets the length of the preamble
     /// in bytes.
@@ -932,11 +922,6 @@ public:
     /// connected.
     /// \return The integer device type
     uint16_t deviceType() {return _deviceType;};
-
-    bool ACKReceived(uint8_t fromNodeID);
-    bool ACKRequested();
-    void sendACK(const uint8_t* buffer = 0, uint8_t bufferSize=0);
-    bool sendWithRetry(uint8_t toAddress, const uint8_t* buffer, uint8_t bufferSize, uint8_t retries=2, uint8_t retryWaitTime=40);
 
 protected:
     /// This is a low level function to handle the interrupts for one instance of RF69.
