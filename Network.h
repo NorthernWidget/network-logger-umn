@@ -84,7 +84,7 @@ public:
     void initNetwork();
 
     //handles the every wake network events
-    void runNetwork();
+    void runNetwork(long val);
 
     //The data to the network class for forwarding to the coordinator
     bool sendOverNetwork(long data){ return dataQueue.enqueue(data); };

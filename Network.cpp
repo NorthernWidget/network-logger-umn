@@ -167,8 +167,9 @@ void Network::droppedCoord(){
     delete p;
 }
 
-void Network::runNetwork()
+void Network::runNetwork(long val)
 {
+    Serial.println(val);
     //wake up radio
     this->noPacketReceived = 0;
     Packet *p = new Packet();
@@ -193,27 +194,19 @@ void Network::runNetwork()
 	else if(this->haveCoord){
 		    //send yourdata
         uint8_t data[MAXDATASIZE];
-        uint8_t index;
-        long d;
-        while(!dataQueue.isEmpty()){
-            data[0] = this->myID;
-            for(index = 1 ; index<(MAXDATASIZE-3) && !dataQueue.isEmpty();){ //if index == MAXDATASIZE-4 then one more data will fit
-                d = dataQueue.dequeue();
-                data[index++] = d >> 24;
-                data[index++] = d >> 16;
-                data[index++] = d >> 8;
-                data[index++] = d;
-            }
-            uint8_t failedSend = 0;
-            createPacket(DTRANSMISSION, this->myID, this->nextHop, index, data, p);
-            if(sendPacket(p) == NOACK){
-              //handle what happens on timeout (Never get ACK'd)
-              droppedCoord();
-              delete p;
-              //radio.sleep();
-              return;
-            }
-        }
+        data[0] = val >> 24;
+        data[1] = val >> 16;
+        data[2] = val >> 8;
+        data[3] = val;
+        createPacket(DTRANSMISSION, this->myID, this->nextHop, 4, data, p);
+        sendPacket(p);
+        // if(sendPacket(p) == NOACK){
+        //   //handle what happens on timeout (Never get ACK'd)
+        //   droppedCoord();
+        //   delete p;
+        //   //radio.sleep();
+        //   return;
+        // }
 		    // //listen forward
         // bool dropped = false;
         // while(readPacket(p) == SUCCESS){

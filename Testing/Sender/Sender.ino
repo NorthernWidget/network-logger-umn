@@ -13,7 +13,7 @@ void setup() {
   Serial.println(" ready");
 
   delay(4);
-
+  net.setNextHop(1);
   net.setmyID(2);
   net.initNetwork();
   //net.setNextHop(1);
@@ -21,10 +21,9 @@ void setup() {
 }
 
 void loop() {
-  static long opcode = 0x33333333L;
+  //static long opcode = 0x33333333L;
   // put your main code here, to run repeatedly:
-  net.sendOverNetwork(opcode);
-  opcode++;
-  delay(4000);
-  net.runNetwork();
+  //net.sendOverNetwork(opcode);
+  delay(5000);
+  net.runNetwork(millis());
 }

@@ -23,7 +23,7 @@ void loop() {
   long opcode = 100;
   // put your main code here, to run repeatedly:
   Serial.println("enter run");
-  net.runNetwork();
+  net.runNetwork(opcode);
   Serial.println("exit run");
 //  delay(10);
 }
